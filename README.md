@@ -1,6 +1,6 @@
 # rhobuilder-ux
 
-A custom UX on top of [rhobuilder](https://github.com/rhovision-org/rhobuilder).
+Currently this is just all of the MD files presented as webpages. [rhobuilder](https://github.com/rhovision-org/rhobuilder).
 
 rhobuilder is included unmodified as a git submodule in `vendor/rhobuilder`, pinned to a specific commit. All of our own code lives in `ux/`. **Never edit files inside `vendor/`.**
 
