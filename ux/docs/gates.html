@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Canonical gates — rhobuilder</title>
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="stylesheet" href="../assets/code.css">
+</head>
+<body data-page="gates" data-root="../">
+<div class="doc-shell">
+  <header class="topbar">
+    <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">ρ</span>rhobuilder</a>
+    <nav class="topnav">
+      <a class="hide-sm" href="../index.html">Choose your path</a>
+      <a class="hide-sm" href="../docs/index.html">Manual</a>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="sidebar">Contents</button>
+    </nav>
+  </header>
+  <div class="doc-grid">
+    <nav class="sidebar" id="sidebar" aria-label="Manual"><h4>Front</h4><ul><li><a href="index.html">rhobuilder</a></li><li><a href="install.html">Install</a></li><li><a href="start.html">Quickstart</a></li><li><a href="ui.html">Studio tour</a></li><li><a href="concepts.html">Core concepts</a></li><li><a href="glossary.html">Glossary</a></li></ul><h4>Build loop</h4><ul><li><a href="workflow.html">Workflow</a></li><li><a href="design.html">Design and reuse</a></li><li><a href="scaffold.html">Scaffolding and project status</a></li><li><a href="formal.html">Lean and RhoApp</a></li><li><a href="registry.html">Registry and reuse</a></li><li><a href="testing.html">Testing and gates</a></li></ul><h4>Operate</h4><ul><li><a href="dsh.html">DeepSeek Harness</a></li><li><a href="devnet.html">Local devnet</a></li><li><a href="baseline.html">Public testnet</a></li><li><a href="mcp.html">MCP server</a></li><li><a href="command-reference.html">Command reference</a></li><li><a href="troubleshooting.html">Troubleshooting</a></li><li><a href="faq.html">FAQ</a></li></ul><h4>Understand</h4><ul><li><a href="architecture.html">Architecture</a></li><li><a href="security.html">Security model</a></li><li><a href="gates.html" aria-current="page">Canonical gates</a></li><li><a href="evidence.html">Evidence</a></li></ul><h4>Appendix</h4><ul><li><a href="contributing.html">Contributing</a></li><li><a href="review/non-technical-fitness.html">Non-technical fitness review</a></li></ul></nav>
+    <main>
+      <article class="prose">
+<h1 id="canonical-gates">Canonical gates<a class="headerlink" href="#canonical-gates" title="Permanent link">#</a></h1>
+<p>There is one gate implementation per check, not one in the builder and another in the
+generated app.</p>
+<h2 id="canonical-source">Canonical source<a class="headerlink" href="#canonical-source" title="Permanent link">#</a></h2>
+<p><code>gates/</code> holds the canonical checkers:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>File</th>
+<th>Check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>spec_check.py</code></td>
+<td>design, term budgets, graph/flows/audit JSON, docs links</td>
+</tr>
+<tr>
+<td><code>parse_check.sh</code></td>
+<td>node parser when <code>RHOLO_DIR</code> is present</td>
+</tr>
+<tr>
+<td><code>check_vendored.py</code></td>
+<td>vendored <code>RhoApp</code> tree hash</td>
+</tr>
+<tr>
+<td><code>check_obligations.py</code></td>
+<td>per-arm Lean obligation and forbidden escapes</td>
+</tr>
+<tr>
+<td><code>check_gates.py</code></td>
+<td>the generated project’s <code>GATES.json</code></td>
+</tr>
+</tbody>
+</table></div>
+<p><code>GATES.json</code> records a SHA-256 per file. <code>tools/gate_sync.py --check</code> verifies both the
+canonical tree and the vendored <code>templates/dapp/common/tools/</code> copy; CI and <code>make check</code>
+run it. <code>make gates-check</code> is the same check.</p>
+<h2 id="generated-project">Generated project<a class="headerlink" href="#generated-project" title="Permanent link">#</a></h2>
+<p>The scaffold copies the gates and <code>GATES.json</code> into the app’s <code>tools/</code>. Its <code>make check</code>
+runs <code>check_gates.py</code> first, then <code>spec_check.py</code> and docs. <code>make formal-check</code> runs
+<code>check_vendored.py</code> and <code>check_obligations.py</code>.</p>
+<p>This is a drift record, not a signature. It makes an unintended edit visible; a generated
+project can still be edited deliberately.</p>
+<h2 id="read-next">Read next<a class="headerlink" href="#read-next" title="Permanent link">#</a></h2>
+<ul>
+<li><a href="testing.html">Testing and gates</a> — profiles, <code>not_run</code> and CI.</li>
+<li><a href="formal.html">Formal</a> — RhoApp and obligations.</li>
+<li><a href="scaffold.html">Scaffolding</a> — where the vendored gates live.</li>
+</ul>
+      </article>
+      <nav class="pager" aria-label="Pages"><a class="prev" href="security.html"><div class="dir">← Previous</div><div class="t">Security model</div></a><a class="next" href="evidence.html"><div class="dir">Next</div><div class="t">Evidence →</div></a></nav>
+      <footer class="footer">Built from rhobuilder <code>3ad31a6</code>.</footer>
+    </main>
+  </div>
+</div>
+<script src="../assets/roles.js"></script>
+<script src="../assets/docs.js"></script>
+</body>
+</html>

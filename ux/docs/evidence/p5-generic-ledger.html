@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>p5-generic-ledger.json — rhobuilder</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="stylesheet" href="../../assets/code.css">
+</head>
+<body data-page="evidence/p5-generic-ledger" data-root="../../">
+<div class="doc-shell">
+  <header class="topbar">
+    <a class="brand" href="../../index.html"><span class="brand-mark" aria-hidden="true">ρ</span>rhobuilder</a>
+    <nav class="topnav">
+      <a class="hide-sm" href="../../index.html">Choose your path</a>
+      <a class="hide-sm" href="../../docs/index.html">Manual</a>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="sidebar">Contents</button>
+    </nav>
+  </header>
+  <div class="doc-grid">
+    <nav class="sidebar" id="sidebar" aria-label="Manual"><h4>Front</h4><ul><li><a href="../index.html">rhobuilder</a></li><li><a href="../install.html">Install</a></li><li><a href="../start.html">Quickstart</a></li><li><a href="../ui.html">Studio tour</a></li><li><a href="../concepts.html">Core concepts</a></li><li><a href="../glossary.html">Glossary</a></li></ul><h4>Build loop</h4><ul><li><a href="../workflow.html">Workflow</a></li><li><a href="../design.html">Design and reuse</a></li><li><a href="../scaffold.html">Scaffolding and project status</a></li><li><a href="../formal.html">Lean and RhoApp</a></li><li><a href="../registry.html">Registry and reuse</a></li><li><a href="../testing.html">Testing and gates</a></li></ul><h4>Operate</h4><ul><li><a href="../dsh.html">DeepSeek Harness</a></li><li><a href="../devnet.html">Local devnet</a></li><li><a href="../baseline.html">Public testnet</a></li><li><a href="../mcp.html">MCP server</a></li><li><a href="../command-reference.html">Command reference</a></li><li><a href="../troubleshooting.html">Troubleshooting</a></li><li><a href="../faq.html">FAQ</a></li></ul><h4>Understand</h4><ul><li><a href="../architecture.html">Architecture</a></li><li><a href="../security.html">Security model</a></li><li><a href="../gates.html">Canonical gates</a></li><li><a href="../evidence.html">Evidence</a></li></ul><h4>Appendix</h4><ul><li><a href="../contributing.html">Contributing</a></li><li><a href="../review/non-technical-fitness.html">Non-technical fitness review</a></li></ul></nav>
+    <main>
+      <article class="prose">
+<h1>p5-generic-ledger.json</h1>
+<p>A measured evidence record, shown exactly as stored in the repository.</p>
+<p><a href="../evidence.html">← What the evidence records mean</a></p>
+<div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"schema"</span><span class="p">:</span><span class="w"> </span><span class="s2">"rhobuilder.p5-generic-evidence/v1"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"recordedAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2026-11-25T18:38:18Z"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"network"</span><span class="p">:</span><span class="w"> </span><span class="s2">"devnet"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"networkId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"testnet"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"shardId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/root"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"app"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"slug"</span><span class="p">:</span><span class="w"> </span><span class="s2">"payments-ledger"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"design"</span><span class="p">:</span><span class="w"> </span><span class="s2">"fixtures/designs/payments-ledger.json"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"root"</span><span class="p">:</span><span class="w"> </span><span class="s2">"rho:id:f9he49buunbwm34th3k8cya4j3imgghxp9eg3hnt5yc9urr4syfo"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"verified"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"verified"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"steps"</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"paths"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"generic_contracts"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="s2">"contracts/src/10_ledger.rho"</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">"contracts/src/20_payments.rho"</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">"contracts/src/30_ledger_notes.rho"</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">"contracts/src/00_root.rho"</span>
+<span class="w">    </span><span class="p">],</span>
+<span class="w">    </span><span class="nt">"manifest"</span><span class="p">:</span><span class="w"> </span><span class="s2">".rhobuilder-contracts.json"</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"checks"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"make_check"</span><span class="p">:</span><span class="w"> </span><span class="s2">"pass"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"deploy_execute"</span><span class="p">:</span><span class="w"> </span><span class="s2">"verified"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"unit_smoke"</span><span class="p">:</span><span class="w"> </span><span class="s2">"pass"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"make_unit_all"</span><span class="p">:</span><span class="w"> </span><span class="s2">"not_run (devnet throttled after restart)"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"root_resolve"</span><span class="p">:</span><span class="w"> </span><span class="s2">"pass (4 keys)"</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"note"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Generic root/resource/new-cell/adapter path. The design arms remain owed; no behavioural suite is generated."</span>
+<span class="p">}</span>
+</pre></div>
+
+      </article>
+      <nav class="pager" aria-label="Pages"></nav>
+      <footer class="footer">Built from rhobuilder <code>3ad31a6</code>.</footer>
+    </main>
+  </div>
+</div>
+<script src="../../assets/roles.js"></script>
+<script src="../../assets/docs.js"></script>
+</body>
+</html>

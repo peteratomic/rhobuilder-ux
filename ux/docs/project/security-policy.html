@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Security policy — rhobuilder</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="stylesheet" href="../../assets/code.css">
+</head>
+<body data-page="project/security-policy" data-root="../../">
+<div class="doc-shell">
+  <header class="topbar">
+    <a class="brand" href="../../index.html"><span class="brand-mark" aria-hidden="true">ρ</span>rhobuilder</a>
+    <nav class="topnav">
+      <a class="hide-sm" href="../../index.html">Choose your path</a>
+      <a class="hide-sm" href="../../docs/index.html">Manual</a>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="sidebar">Contents</button>
+    </nav>
+  </header>
+  <div class="doc-grid">
+    <nav class="sidebar" id="sidebar" aria-label="Manual"><h4>Front</h4><ul><li><a href="../index.html">rhobuilder</a></li><li><a href="../install.html">Install</a></li><li><a href="../start.html">Quickstart</a></li><li><a href="../ui.html">Studio tour</a></li><li><a href="../concepts.html">Core concepts</a></li><li><a href="../glossary.html">Glossary</a></li></ul><h4>Build loop</h4><ul><li><a href="../workflow.html">Workflow</a></li><li><a href="../design.html">Design and reuse</a></li><li><a href="../scaffold.html">Scaffolding and project status</a></li><li><a href="../formal.html">Lean and RhoApp</a></li><li><a href="../registry.html">Registry and reuse</a></li><li><a href="../testing.html">Testing and gates</a></li></ul><h4>Operate</h4><ul><li><a href="../dsh.html">DeepSeek Harness</a></li><li><a href="../devnet.html">Local devnet</a></li><li><a href="../baseline.html">Public testnet</a></li><li><a href="../mcp.html">MCP server</a></li><li><a href="../command-reference.html">Command reference</a></li><li><a href="../troubleshooting.html">Troubleshooting</a></li><li><a href="../faq.html">FAQ</a></li></ul><h4>Understand</h4><ul><li><a href="../architecture.html">Architecture</a></li><li><a href="../security.html">Security model</a></li><li><a href="../gates.html">Canonical gates</a></li><li><a href="../evidence.html">Evidence</a></li></ul><h4>Appendix</h4><ul><li><a href="../contributing.html">Contributing</a></li><li><a href="../review/non-technical-fitness.html">Non-technical fitness review</a></li></ul></nav>
+    <main>
+      <article class="prose">
+<h1 id="security">Security<a class="headerlink" href="#security" title="Permanent link">#</a></h1>
+<p><code>rhobuilder</code> treats signing and keys as the sensitive boundary.</p>
+<h2 id="reporting">Reporting<a class="headerlink" href="#reporting" title="Permanent link">#</a></h2>
+<p>Report a vulnerability privately to the maintainer listed in <code>CITATION.cff</code> or open a
+GitHub security advisory. Do not include key material, funded addresses or live deploy
+bodies in a public issue.</p>
+<h2 id="operational-rules">Operational rules<a class="headerlink" href="#operational-rules" title="Permanent link">#</a></h2>
+<ul>
+<li>Keystores stay under the working directory, mode 0600, gitignored and untracked.</li>
+<li>No command prints, logs or serialises a secret. <code>baseline keygen</code> prints only public
+  addresses.</li>
+<li><code>mainnet</code> is unavailable and every deploy path refuses it.</li>
+<li>Public-testnet execution requires an explicit campaign approval, <code>--allow-live</code>, a
+  funded key and a confirmation token binding the observed identity and plan digest.</li>
+<li>The executor adopts a resolvable root and never deploys a second copy of a primitive.
+  A partial install stops; the write-ahead op cache is preserved.</li>
+<li><code>chain call</code> is a signed local/devnet surface used by suites. It is never exposed to the
+  DSH plugin or MCP server.</li>
+<li>Sibling repos are read with <code>git show</code> only; rhobuilder never edits them.</li>
+</ul>
+<h2 id="dsh-plugin">DSH plugin<a class="headerlink" href="#dsh-plugin" title="Permanent link">#</a></h2>
+<p>The DSH plugin's <code>spawn</code> is trusted host code. The plugin surface is read-only/plan; it
+does not expose signed execution. A model can request a scaffold apply, which writes only
+inside the configured target.</p>
+      </article>
+      <nav class="pager" aria-label="Pages"></nav>
+      <footer class="footer">Built from rhobuilder <code>3ad31a6</code>.</footer>
+    </main>
+  </div>
+</div>
+<script src="../../assets/roles.js"></script>
+<script src="../../assets/docs.js"></script>
+</body>
+</html>

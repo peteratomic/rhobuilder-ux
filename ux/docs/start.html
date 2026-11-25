@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quickstart — rhobuilder</title>
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="stylesheet" href="../assets/code.css">
+</head>
+<body data-page="start" data-root="../">
+<div class="doc-shell">
+  <header class="topbar">
+    <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">ρ</span>rhobuilder</a>
+    <nav class="topnav">
+      <a class="hide-sm" href="../index.html">Choose your path</a>
+      <a class="hide-sm" href="../docs/index.html">Manual</a>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="sidebar">Contents</button>
+    </nav>
+  </header>
+  <div class="doc-grid">
+    <nav class="sidebar" id="sidebar" aria-label="Manual"><h4>Front</h4><ul><li><a href="index.html">rhobuilder</a></li><li><a href="install.html">Install</a></li><li><a href="start.html" aria-current="page">Quickstart</a></li><li><a href="ui.html">Studio tour</a></li><li><a href="concepts.html">Core concepts</a></li><li><a href="glossary.html">Glossary</a></li></ul><h4>Build loop</h4><ul><li><a href="workflow.html">Workflow</a></li><li><a href="design.html">Design and reuse</a></li><li><a href="scaffold.html">Scaffolding and project status</a></li><li><a href="formal.html">Lean and RhoApp</a></li><li><a href="registry.html">Registry and reuse</a></li><li><a href="testing.html">Testing and gates</a></li></ul><h4>Operate</h4><ul><li><a href="dsh.html">DeepSeek Harness</a></li><li><a href="devnet.html">Local devnet</a></li><li><a href="baseline.html">Public testnet</a></li><li><a href="mcp.html">MCP server</a></li><li><a href="command-reference.html">Command reference</a></li><li><a href="troubleshooting.html">Troubleshooting</a></li><li><a href="faq.html">FAQ</a></li></ul><h4>Understand</h4><ul><li><a href="architecture.html">Architecture</a></li><li><a href="security.html">Security model</a></li><li><a href="gates.html">Canonical gates</a></li><li><a href="evidence.html">Evidence</a></li></ul><h4>Appendix</h4><ul><li><a href="contributing.html">Contributing</a></li><li><a href="review/non-technical-fitness.html">Non-technical fitness review</a></li></ul></nav>
+    <main>
+      <article class="prose">
+<h1 id="quickstart">Quickstart<a class="headerlink" href="#quickstart" title="Permanent link">#</a></h1>
+<p>This is the shortest path from a clean checkout to a validated design and a scaffold plan.
+You do not need to read the registry schema or write Rholang to begin. For prerequisites
+and tarball installation, see <a href="install.html">Install</a>.</p>
+<h2 id="1-check-the-machine">1. Check the machine<a class="headerlink" href="#1-check-the-machine" title="Permanent link">#</a></h2>
+<div class="highlight"><pre><span></span><code>python3<span class="w"> </span>tools/launch_dsh.py<span class="w"> </span>--check<span class="w"> </span>--json
+</code></pre></div>
+
+<p>Read <code>setupRequired</code> and each <code>hint</code>. A <code>setup</code> item is not a pass. The common items are
+<code>DEEPSEEK_API_KEY</code> (chat), devnet (Docker plus a healthy local node), <code>lake</code> (formal
+checks) and mdBook (docs only). See <a href="troubleshooting.html">Troubleshooting</a>.</p>
+<h2 id="2-build-and-launch">2. Build and launch<a class="headerlink" href="#2-build-and-launch" title="Permanent link">#</a></h2>
+<div class="highlight"><pre><span></span><code>cargo<span class="w"> </span>build<span class="w"> </span>-p<span class="w"> </span>rhobuilder-cli
+python3<span class="w"> </span>tools/launch_dsh.py<span class="w"> </span>--with-mcp<span class="w"> </span>--port<span class="w"> </span><span class="m">3081</span><span class="w"> </span>web
+</code></pre></div>
+
+<p>Open the printed token URL. The sidebar has <strong>Rhobuilder</strong> for readiness, networks,
+primitives, examples, the design composer, project status and testnet preflight. Use
+<code>--no-open</code> on a remote/headless machine and <code>--no-ui</code> to fall back to the stock shell.</p>
+<h2 id="3-start-a-design">3. Start a design<a class="headerlink" href="#3-start-a-design" title="Permanent link">#</a></h2>
+<p>Use the dashboard <strong>Design composer</strong> or a starter. The composer builds a
+<code>rhobuilder.design/v1</code> draft, validates it through the CLI, and saves it for continuity:</p>
+<ul>
+<li>blank project → <code>designs/&lt;slug&gt;.json</code>;</li>
+<li>existing project with <code>.rhobuilder.json</code> → its root, with overwrite confirmation.</li>
+</ul>
+<p>Only a validated design is written; a refused draft writes nothing. You can also ask the
+assistant:</p>
+<blockquote>
+<p>Interview me and create a design.json for a bookable service.</p>
+</blockquote>
+<p>The assistant designs the unique part, reuses r-cash/r-sure/r-gen/r-share/r-print by
+<code>rho:id</code>, and runs the reuse gate. A <code>refuse</code> verdict stops the loop. See
+<a href="design.html">Design and reuse</a> and <a href="ui.html">Studio tour</a>.</p>
+<h2 id="4-scaffold-prove-test">4. Scaffold, prove, test<a class="headerlink" href="#4-scaffold-prove-test" title="Permanent link">#</a></h2>
+<p>Plan a scaffold first; apply is a separate chat/CLI action after you approve the file
+count.</p>
+<div class="highlight"><pre><span></span><code>rhobuilder<span class="w"> </span>--json<span class="w"> </span>new<span class="w"> </span>/tmp/app<span class="w"> </span>--design<span class="w"> </span>designs/&lt;slug&gt;.json<span class="w"> </span>--template<span class="w"> </span>headless<span class="w"> </span>--plan
+rhobuilder<span class="w"> </span>--json<span class="w"> </span>new<span class="w"> </span>/tmp/app<span class="w"> </span>--design<span class="w"> </span>designs/&lt;slug&gt;.json<span class="w"> </span>--template<span class="w"> </span>headless<span class="w"> </span>--apply
+rhobuilder<span class="w"> </span>--json<span class="w"> </span>project<span class="w"> </span>status<span class="w"> </span>--project<span class="w"> </span>/tmp/app
+</code></pre></div>
+
+<p><code>project status</code> reports <code>Scaffold</code>, <code>Implemented</code>, <code>Tested</code>, <code>Proved model</code>, <code>Owed</code>,
+<code>Not run</code> and <code>Refused</code> from project files and recorded evidence. A saved design is <code>Draft</code>
+until scaffolded. <code>make check</code> is static; <code>make formal-check</code> needs Lean; devnet suites
+require a healthy devnet and otherwise report <code>not_run</code>. See <a href="scaffold.html">Scaffolding</a> and
+<a href="testing.html">Testing and gates</a>.</p>
+<h2 id="5-devnet-and-deploy">5. Devnet and deploy<a class="headerlink" href="#5-devnet-and-deploy" title="Permanent link">#</a></h2>
+<p>The safe local lifecycle is CLI-only:</p>
+<div class="highlight"><pre><span></span><code>python3<span class="w"> </span>tools/devnet.py<span class="w"> </span>status<span class="w"> </span>--json
+python3<span class="w"> </span>tools/devnet.py<span class="w"> </span>start<span class="w"> </span>--json
+python3<span class="w"> </span>tools/devnet.py<span class="w"> </span>onboard<span class="w"> </span>--json<span class="w">          </span><span class="c1"># dry run</span>
+python3<span class="w"> </span>tools/devnet.py<span class="w"> </span>onboard<span class="w"> </span>--json<span class="w"> </span>--execute<span class="w">  </span><span class="c1"># devnet only</span>
+</code></pre></div>
+
+<p><code>start</code> only starts the existing <code>devnet-bootstrap</code>; it never creates, resets or removes a
+container or volume. <code>onboard</code> reuses keygen, funding, the baseline install and deep verify
+under explicit <code>--execute</code>. See <a href="devnet.html">Local devnet</a>.</p>
+<p>Signing, funding, deploy execute, testnet baseline run and deep verify are deliberately
+CLI-only. Use the copyable commands in the dashboard. Mainnet is refused; testnet needs a
+separate approval and funded key. See <a href="baseline.html">Public testnet</a> and
+<a href="security.html">Security model</a>.</p>
+<h2 id="what-is-real">What is real<a class="headerlink" href="#what-is-real" title="Permanent link">#</a></h2>
+<ul>
+<li>P5 devnet: five primitive roots and a generated app are measured and verified; nine suites
+  pass.</li>
+<li>P6 testnet: plan/dry-run/executor are implemented; live execution is gated and has not
+  run. The r-cash account-factory candidate is the shared blocker.</li>
+<li>Generated scaffolds are not finished apps. <code>owed</code> is a real status; <code>proved-model</code> is a
+  shallow model, never a Rholang refinement.</li>
+</ul>
+<h2 id="next">Next<a class="headerlink" href="#next" title="Permanent link">#</a></h2>
+<ul>
+<li><a href="ui.html">Studio tour</a> — what the dashboard shows.</li>
+<li><a href="concepts.html">Core concepts</a> — primitives, roots, statuses.</li>
+<li><a href="command-reference.html">Command reference</a> — flags and exit codes.</li>
+</ul>
+      </article>
+      <nav class="pager" aria-label="Pages"><a class="prev" href="install.html"><div class="dir">← Previous</div><div class="t">Install</div></a><a class="next" href="ui.html"><div class="dir">Next</div><div class="t">Studio tour →</div></a></nav>
+      <footer class="footer">Built from rhobuilder <code>3ad31a6</code>.</footer>
+    </main>
+  </div>
+</div>
+<script src="../assets/roles.js"></script>
+<script src="../assets/docs.js"></script>
+</body>
+</html>

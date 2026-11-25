@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Local devnet — rhobuilder</title>
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="stylesheet" href="../assets/code.css">
+</head>
+<body data-page="devnet" data-root="../">
+<div class="doc-shell">
+  <header class="topbar">
+    <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">ρ</span>rhobuilder</a>
+    <nav class="topnav">
+      <a class="hide-sm" href="../index.html">Choose your path</a>
+      <a class="hide-sm" href="../docs/index.html">Manual</a>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="sidebar">Contents</button>
+    </nav>
+  </header>
+  <div class="doc-grid">
+    <nav class="sidebar" id="sidebar" aria-label="Manual"><h4>Front</h4><ul><li><a href="index.html">rhobuilder</a></li><li><a href="install.html">Install</a></li><li><a href="start.html">Quickstart</a></li><li><a href="ui.html">Studio tour</a></li><li><a href="concepts.html">Core concepts</a></li><li><a href="glossary.html">Glossary</a></li></ul><h4>Build loop</h4><ul><li><a href="workflow.html">Workflow</a></li><li><a href="design.html">Design and reuse</a></li><li><a href="scaffold.html">Scaffolding and project status</a></li><li><a href="formal.html">Lean and RhoApp</a></li><li><a href="registry.html">Registry and reuse</a></li><li><a href="testing.html">Testing and gates</a></li></ul><h4>Operate</h4><ul><li><a href="dsh.html">DeepSeek Harness</a></li><li><a href="devnet.html" aria-current="page">Local devnet</a></li><li><a href="baseline.html">Public testnet</a></li><li><a href="mcp.html">MCP server</a></li><li><a href="command-reference.html">Command reference</a></li><li><a href="troubleshooting.html">Troubleshooting</a></li><li><a href="faq.html">FAQ</a></li></ul><h4>Understand</h4><ul><li><a href="architecture.html">Architecture</a></li><li><a href="security.html">Security model</a></li><li><a href="gates.html">Canonical gates</a></li><li><a href="evidence.html">Evidence</a></li></ul><h4>Appendix</h4><ul><li><a href="contributing.html">Contributing</a></li><li><a href="review/non-technical-fitness.html">Non-technical fitness review</a></li></ul></nav>
+    <main>
+      <article class="prose">
+<h1 id="local-devnet">Local devnet<a class="headerlink" href="#local-devnet" title="Permanent link">#</a></h1>
+<p>P5 is measured on the local <code>devnet-bootstrap</code>, not just scaffolded. The evidence is
+<code>docs/src/evidence/p5-devnet.json</code>.</p>
+<h2 id="what-was-run">What was run<a class="headerlink" href="#what-was-run" title="Permanent link">#</a></h2>
+<ol>
+<li>Recovered the node non-destructively: the admin resource-resume was refused, a container
+   restart cleared the in-memory latch, and the memory cap was raised to 12 GiB against the
+   existing volume. Height and data were preserved.</li>
+<li>Generated devnet ops keys under <code>.ops/devnet/</code> (mode 0600) and funded the deployer once
+   from the in-container validator.</li>
+<li>Installed the vendored, pinned graph in dependency order: r-cash core, r-gen, r-share
+   safe, r-sure, r-print.</li>
+<li>Verified every app root and its required Root keys through a signed read. A second run
+   adopted all five with zero duplicate deploys.</li>
+<li>Generated the <code>bookable-service</code> example, deployed its eight terms, and ran nine
+   behavioural suites.</li>
+</ol>
+<h2 id="measured-result">Measured result<a class="headerlink" href="#measured-result" title="Permanent link">#</a></h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>App</th>
+<th>Commit</th>
+<th>Steps</th>
+<th>Root status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>r-cash (core)</td>
+<td><code>49b441d</code></td>
+<td>15</td>
+<td>verified</td>
+</tr>
+<tr>
+<td>r-gen</td>
+<td><code>bcc840c</code></td>
+<td>7</td>
+<td>verified</td>
+</tr>
+<tr>
+<td>r-share (safe)</td>
+<td><code>7114acb</code></td>
+<td>15</td>
+<td>verified</td>
+</tr>
+<tr>
+<td>r-sure</td>
+<td><code>0da5d04</code></td>
+<td>17</td>
+<td>verified</td>
+</tr>
+<tr>
+<td>r-print (safe)</td>
+<td><code>a2d91b3</code></td>
+<td>15</td>
+<td>verified</td>
+</tr>
+<tr>
+<td>bookable-service</td>
+<td>local</td>
+<td>8</td>
+<td>verified</td>
+</tr>
+</tbody>
+</table></div>
+<p>Suites: <code>root</code>, <code>payments</code>, <code>booking</code>, <code>cover</code>, <code>dispute</code>, <code>refusal</code>, <code>idempotency</code>,
+<code>conservation</code>, <code>concurrency</code> — all pass.</p>
+<p>The r-cash core profile omits <code>51_pool</code> and <code>50_market</code>. The pinned node rejects <code>51_pool</code>
+with <code>parse depth exceeded</code>; no app in the graph requires either component. The full
+sibling suite set (all 33 r-share suites) is not re-run here.</p>
+<h2 id="safe-lifecycle">Safe lifecycle<a class="headerlink" href="#safe-lifecycle" title="Permanent link">#</a></h2>
+<div class="highlight"><pre><span></span><code>python3<span class="w"> </span>tools/devnet.py<span class="w"> </span>status<span class="w"> </span>--json
+python3<span class="w"> </span>tools/devnet.py<span class="w"> </span>start<span class="w"> </span>--json
+python3<span class="w"> </span>tools/devnet.py<span class="w"> </span><span class="nb">wait</span><span class="w"> </span>--json
+python3<span class="w"> </span>tools/devnet.py<span class="w"> </span>onboard<span class="w"> </span>--json<span class="w">            </span><span class="c1"># dry run</span>
+python3<span class="w"> </span>tools/devnet.py<span class="w"> </span>onboard<span class="w"> </span>--json<span class="w"> </span>--execute<span class="w">  </span><span class="c1"># devnet only</span>
+make<span class="w"> </span>devnet-status<span class="w">                               </span><span class="c1"># the same read-only status</span>
+</code></pre></div>
+
+<p><code>status</code> is read-only. <code>start</code> only starts the existing <code>RHOBUILDER_CONTAINER</code> (default
+<code>devnet-bootstrap</code>) and waits for <code>degraded == "normal"</code> and <code>acceptsDeploys</code>; it never runs
+<code>docker run/create/rm</code>, <code>volume rm</code>, compose, reset or restart. <code>onboard</code> is a dry run
+unless <code>--execute</code> is passed; execution is devnet-only and runs keygen, funding, the
+baseline install and deep verify in order, stopping on the first failure. The tool resolves
+the CLI from <code>--rhobuilder</code>, <code>RHOBUILDER_BIN</code>, <code>bin/rhobuilder</code>, then
+<code>target/release/rhobuilder</code>.</p>
+<p>If the container is missing, create it from your RNodeRust checkout; this tool will not
+create or reset it. See <a href="troubleshooting.html">Troubleshooting</a>.</p>
+<h2 id="manual-commands">Manual commands<a class="headerlink" href="#manual-commands" title="Permanent link">#</a></h2>
+<div class="highlight"><pre><span></span><code><span class="c1"># read-only plan and local install</span>
+rhobuilder<span class="w"> </span>--json<span class="w"> </span>baseline<span class="w"> </span>plan<span class="w"> </span>--network<span class="w"> </span>devnet
+rhobuilder<span class="w"> </span>--json<span class="w"> </span>baseline<span class="w"> </span>keygen<span class="w"> </span>--network<span class="w"> </span>devnet<span class="w"> </span>--out<span class="w"> </span>.ops/devnet/keys.json
+rhobuilder<span class="w"> </span>--json<span class="w"> </span>baseline<span class="w"> </span>fund<span class="w">   </span>--network<span class="w"> </span>devnet<span class="w"> </span>--keys<span class="w"> </span>.ops/devnet/keys.json<span class="w"> </span>--execute
+rhobuilder<span class="w"> </span>--json<span class="w"> </span>baseline<span class="w"> </span>run<span class="w">    </span>--network<span class="w"> </span>devnet<span class="w"> </span>--keys<span class="w"> </span>.ops/devnet/keys.json<span class="w"> </span>--execute
+rhobuilder<span class="w"> </span>--json<span class="w"> </span>baseline<span class="w"> </span>verify<span class="w"> </span>--network<span class="w"> </span>devnet<span class="w"> </span>--deep<span class="w"> </span>--keys<span class="w"> </span>.ops/devnet/keys.json
+
+<span class="c1"># app</span>
+rhobuilder<span class="w"> </span>--json<span class="w"> </span>deploy<span class="w"> </span>plan<span class="w">    </span>--project<span class="w"> </span>/tmp/rhobuilder-p5<span class="w"> </span>--network<span class="w"> </span>devnet
+rhobuilder<span class="w"> </span>--json<span class="w"> </span>deploy<span class="w"> </span>execute<span class="w"> </span>--project<span class="w"> </span>/tmp/rhobuilder-p5<span class="w"> </span>--network<span class="w"> </span>devnet<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--execute<span class="w"> </span>--keys<span class="w"> </span>.ops/devnet/keys.json
+make<span class="w"> </span>-C<span class="w"> </span>/tmp/rhobuilder-p5<span class="w"> </span>unit-all
+</code></pre></div>
+
+<p>The generated app harness reads <code>RHOBUILDER_DEVNET=1</code>, <code>RHOBUILDER_BIN</code>,
+<code>RHOBUILDER_KEYS</code>, <code>RHOBUILDER_NETWORK</code> and <code>RHOBUILDER_REGISTRY</code>.</p>
+<h2 id="not-run-is-a-result">Not-run is a result<a class="headerlink" href="#not-run-is-a-result" title="Permanent link">#</a></h2>
+<p><code>run_suites.py</code> checks node health first. An unreachable or <code>degraded != "normal"</code> node
+prints <code>not_run</code> and exits 2; it never reports a pass. <code>deployments/suite-results.json</code>
+records <code>pass</code>/<code>fail</code>/<code>not_run</code>.</p>
+<h2 id="read-next">Read next<a class="headerlink" href="#read-next" title="Permanent link">#</a></h2>
+<ul>
+<li><a href="baseline.html">Public testnet</a> — the gated campaign.</li>
+<li><a href="testing.html">Testing and gates</a> — how these suites fit the pyramid.</li>
+<li><a href="command-reference.html">Command reference</a> — flags and exit codes.</li>
+</ul>
+      </article>
+      <nav class="pager" aria-label="Pages"><a class="prev" href="dsh.html"><div class="dir">← Previous</div><div class="t">DeepSeek Harness</div></a><a class="next" href="baseline.html"><div class="dir">Next</div><div class="t">Public testnet →</div></a></nav>
+      <footer class="footer">Built from rhobuilder <code>3ad31a6</code>.</footer>
+    </main>
+  </div>
+</div>
+<script src="../assets/roles.js"></script>
+<script src="../assets/docs.js"></script>
+</body>
+</html>

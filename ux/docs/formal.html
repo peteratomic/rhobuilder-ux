@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lean and RhoApp — rhobuilder</title>
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="stylesheet" href="../assets/code.css">
+</head>
+<body data-page="formal" data-root="../">
+<div class="doc-shell">
+  <header class="topbar">
+    <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">ρ</span>rhobuilder</a>
+    <nav class="topnav">
+      <a class="hide-sm" href="../index.html">Choose your path</a>
+      <a class="hide-sm" href="../docs/index.html">Manual</a>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="sidebar">Contents</button>
+    </nav>
+  </header>
+  <div class="doc-grid">
+    <nav class="sidebar" id="sidebar" aria-label="Manual"><h4>Front</h4><ul><li><a href="index.html">rhobuilder</a></li><li><a href="install.html">Install</a></li><li><a href="start.html">Quickstart</a></li><li><a href="ui.html">Studio tour</a></li><li><a href="concepts.html">Core concepts</a></li><li><a href="glossary.html">Glossary</a></li></ul><h4>Build loop</h4><ul><li><a href="workflow.html">Workflow</a></li><li><a href="design.html">Design and reuse</a></li><li><a href="scaffold.html">Scaffolding and project status</a></li><li><a href="formal.html" aria-current="page">Lean and RhoApp</a></li><li><a href="registry.html">Registry and reuse</a></li><li><a href="testing.html">Testing and gates</a></li></ul><h4>Operate</h4><ul><li><a href="dsh.html">DeepSeek Harness</a></li><li><a href="devnet.html">Local devnet</a></li><li><a href="baseline.html">Public testnet</a></li><li><a href="mcp.html">MCP server</a></li><li><a href="command-reference.html">Command reference</a></li><li><a href="troubleshooting.html">Troubleshooting</a></li><li><a href="faq.html">FAQ</a></li></ul><h4>Understand</h4><ul><li><a href="architecture.html">Architecture</a></li><li><a href="security.html">Security model</a></li><li><a href="gates.html">Canonical gates</a></li><li><a href="evidence.html">Evidence</a></li></ul><h4>Appendix</h4><ul><li><a href="contributing.html">Contributing</a></li><li><a href="review/non-technical-fitness.html">Non-technical fitness review</a></li></ul></nav>
+    <main>
+      <article class="prose">
+<h1 id="lean-and-rhoapp">Lean and RhoApp<a class="headerlink" href="#lean-and-rhoapp" title="Permanent link">#</a></h1>
+<p>Generated apps keep a shallow Lean 4.12 model and vendor the shared <code>RhoApp</code> library. The
+model is deliberately shallow: it does not formalise Rholang syntax, ERTP, phlo or
+cryptography, and a <code>proved-model</code> result is not a refinement of deployed Rholang.</p>
+<h2 id="rhoapp">RhoApp<a class="headerlink" href="#rhoapp" title="Permanent link">#</a></h2>
+<p><code>formal/lean/RhoApp</code> is extracted from r-share’s proven <code>Basic.lean</code> and
+<code>Linear/{Cell,Protocol,Deploy,Concurrency}.lean</code> (AGPL-3.0-or-later, commit <code>7114acba</code>).
+It provides:</p>
+<ul>
+<li>the linear cell store (<code>peek</code>, <code>take</code>, <code>put</code>, <code>call</code>, <code>commit</code>), <code>WF</code>, and the D1/D2/D3
+  rejection theorems;</li>
+<li>helper protocols H1, H2a, H2b and P2;</li>
+<li>deploy atomicity: <code>deploy_atomic_rollback</code>, <code>run_failure_no_leak</code>, <code>commit_preserves_wf</code>;</li>
+<li>concurrency: <code>commit_commute</code>, <code>run_disjoint_commute</code>, <code>disjoint_cells_linearizable</code>;</li>
+<li>shared quantities: <code>Amount</code>, <code>Height</code>, <code>Bps</code>, <code>floorDiv</code>, <code>ceilDiv</code>, <code>share</code>, <code>sumNat</code>.</li>
+</ul>
+<p>Its axiom audit reports only <code>propext</code> and <code>Quot.sound</code>.</p>
+<h2 id="vendoring">Vendoring<a class="headerlink" href="#vendoring" title="Permanent link">#</a></h2>
+<p>A generated app contains:</p>
+<div class="highlight"><pre><span></span><code>spec/lean/RhoApp.lean
+spec/lean/RhoApp/Basic.lean
+spec/lean/RhoApp/Linear/{Cell,Protocol,Deploy,Concurrency}.lean
+spec/lean/RhoApp/Audit.lean
+spec/lean/VENDORED.json
+</code></pre></div>
+
+<p><code>VENDORED.json</code> records the source, version, source commit (or <code>working-tree</code>) and a
+deterministic SHA-256 over the vendored paths and bytes. The app’s <code>make formal-check</code> runs
+<code>lake build</code>, <code>tools/check_vendored.py</code> and <code>tools/check_obligations.py</code>; a tampered file or
+a forbidden Lean escape fails.</p>
+<div class="highlight"><pre><span></span><code>rhobuilder<span class="w"> </span>--json<span class="w"> </span>formal<span class="w"> </span>check<span class="w"> </span>--project<span class="w"> </span>/path/to/app
+rhobuilder<span class="w"> </span>--json<span class="w"> </span>formal<span class="w"> </span>check<span class="w"> </span>--project<span class="w"> </span>/path/to/app<span class="w"> </span>--strict
+rhobuilder<span class="w"> </span>--json<span class="w"> </span>formal<span class="w"> </span>sync<span class="w">  </span>--project<span class="w"> </span>/path/to/app<span class="w"> </span>--source<span class="w"> </span>/path/to/rhobuilder
+</code></pre></div>
+
+<p><code>check_obligations.py</code> reads <code>spec/flows/core.yaml</code>. Every component with mutating arms must
+declare <code>lean_status</code>; <code>owed</code> is accepted by default and rejected by <code>--strict</code>; a non-<code>owed</code>
+status must name a theorem. <code>sorry</code>, <code>admit</code>, <code>axiom</code> and <code>native_decide</code> are forbidden.
+This checks the model obligation, not a refinement of deployed Rholang.</p>
+<h2 id="status-vocabulary">Status vocabulary<a class="headerlink" href="#status-vocabulary" title="Permanent link">#</a></h2>
+<p><code>proved-model</code> means proved about the shallow model. <code>proved-conformance</code> additionally
+needs a theorem, a corpus vector and a suite assertion. <code>owed</code> is first-class. Never write
+<code>verified</code> or a claim of Rholang refinement.</p>
+<p>The <code>bookable-service</code> example carries a shallow dispute model: <code>voteOnce</code> proves the second
+vote precondition fails, provider exclusion is explicit, and <code>settleConserves</code> proves
+<code>settled + refund = amount</code>. Its <code>spec/flows/core.yaml</code> names <code>voteOnce</code> as <code>proved-model</code>,
+so <code>formal check --strict</code> passes for that example. Generic scaffolds keep their arms
+<code>owed</code>.</p>
+<p>The app keeps its own <code>Basic</code>, <code>Invariants</code>, <code>Emit</code>, <code>Audit</code> and <code>Model/*</code>; <code>Emit</code> and
+<code>Audit</code> are app-specific names and vectors and are not moved into <code>RhoApp</code>.</p>
+<h2 id="read-next">Read next<a class="headerlink" href="#read-next" title="Permanent link">#</a></h2>
+<ul>
+<li><a href="glossary.html">Glossary</a> — <code>owed</code>, <code>not_run</code>, <code>proved-model</code>.</li>
+<li><a href="testing.html">Testing and gates</a> — how formal fits the test pyramid.</li>
+<li><a href="command-reference.html">Command reference</a> — <code>formal check|sync</code>.</li>
+</ul>
+      </article>
+      <nav class="pager" aria-label="Pages"><a class="prev" href="scaffold.html"><div class="dir">← Previous</div><div class="t">Scaffolding and project status</div></a><a class="next" href="registry.html"><div class="dir">Next</div><div class="t">Registry and reuse →</div></a></nav>
+      <footer class="footer">Built from rhobuilder <code>3ad31a6</code>.</footer>
+    </main>
+  </div>
+</div>
+<script src="../assets/roles.js"></script>
+<script src="../assets/docs.js"></script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Design and reuse — rhobuilder</title>
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="stylesheet" href="../assets/code.css">
+</head>
+<body data-page="design" data-root="../">
+<div class="doc-shell">
+  <header class="topbar">
+    <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">ρ</span>rhobuilder</a>
+    <nav class="topnav">
+      <a class="hide-sm" href="../index.html">Choose your path</a>
+      <a class="hide-sm" href="../docs/index.html">Manual</a>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="sidebar">Contents</button>
+    </nav>
+  </header>
+  <div class="doc-grid">
+    <nav class="sidebar" id="sidebar" aria-label="Manual"><h4>Front</h4><ul><li><a href="index.html">rhobuilder</a></li><li><a href="install.html">Install</a></li><li><a href="start.html">Quickstart</a></li><li><a href="ui.html">Studio tour</a></li><li><a href="concepts.html">Core concepts</a></li><li><a href="glossary.html">Glossary</a></li></ul><h4>Build loop</h4><ul><li><a href="workflow.html">Workflow</a></li><li><a href="design.html" aria-current="page">Design and reuse</a></li><li><a href="scaffold.html">Scaffolding and project status</a></li><li><a href="formal.html">Lean and RhoApp</a></li><li><a href="registry.html">Registry and reuse</a></li><li><a href="testing.html">Testing and gates</a></li></ul><h4>Operate</h4><ul><li><a href="dsh.html">DeepSeek Harness</a></li><li><a href="devnet.html">Local devnet</a></li><li><a href="baseline.html">Public testnet</a></li><li><a href="mcp.html">MCP server</a></li><li><a href="command-reference.html">Command reference</a></li><li><a href="troubleshooting.html">Troubleshooting</a></li><li><a href="faq.html">FAQ</a></li></ul><h4>Understand</h4><ul><li><a href="architecture.html">Architecture</a></li><li><a href="security.html">Security model</a></li><li><a href="gates.html">Canonical gates</a></li><li><a href="evidence.html">Evidence</a></li></ul><h4>Appendix</h4><ul><li><a href="contributing.html">Contributing</a></li><li><a href="review/non-technical-fitness.html">Non-technical fitness review</a></li></ul></nav>
+    <main>
+      <article class="prose">
+<h1 id="design-and-reuse">Design and reuse<a class="headerlink" href="#design-and-reuse" title="Permanent link">#</a></h1>
+<p>A design is a <code>design.json</code> (<code>rhobuilder.design/v1</code>) plus the <code>reuse-report.json</code> the gate
+emits. The design states the unique value, actors, resources, component tags, graph,
+conservation, concurrency and acceptance tests. The gate refuses a <code>new</code> commodity
+primitive before any code is written.</p>
+<p>The studio composer can build and validate the same document in memory and save it for
+continuity; see <a href="ui.html">Studio tour</a>. The CLI remains the authority.</p>
+<h2 id="the-document">The document<a class="headerlink" href="#the-document" title="Permanent link">#</a></h2>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">"schema"</span><span class="p">:</span><span class="w"> </span><span class="s2">"rhobuilder.design/v1"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"app"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"…"</span><span class="p">,</span><span class="w"> </span><span class="nt">"slug"</span><span class="p">:</span><span class="w"> </span><span class="s2">"…"</span><span class="p">,</span><span class="w"> </span><span class="nt">"summary"</span><span class="p">:</span><span class="w"> </span><span class="s2">"…"</span><span class="p">,</span><span class="w"> </span><span class="nt">"networks"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"devnet"</span><span class="p">,</span><span class="w"> </span><span class="s2">"testnet"</span><span class="p">]</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"uniqueValue"</span><span class="p">:</span><span class="w"> </span><span class="s2">"…"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"actors"</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="w"> </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"guest"</span><span class="p">,</span><span class="w"> </span><span class="nt">"capabilities"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"book"</span><span class="p">]</span><span class="w"> </span><span class="p">}],</span>
+<span class="w">  </span><span class="nt">"resources"</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="w"> </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"dispute"</span><span class="p">,</span><span class="w"> </span><span class="nt">"owner"</span><span class="p">:</span><span class="w"> </span><span class="s2">"app"</span><span class="p">,</span><span class="w"> </span><span class="nt">"stateCell"</span><span class="p">:</span><span class="w"> </span><span class="s2">"disputeState"</span><span class="p">,</span>
+<span class="w">                  </span><span class="nt">"lifecycle"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"open"</span><span class="p">,</span><span class="w"> </span><span class="s2">"panel"</span><span class="p">,</span><span class="w"> </span><span class="s2">"resolved"</span><span class="p">]</span><span class="w"> </span><span class="p">}],</span>
+<span class="w">  </span><span class="nt">"components"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"payments"</span><span class="p">,</span><span class="w"> </span><span class="nt">"tag"</span><span class="p">:</span><span class="w"> </span><span class="s2">"reuse"</span><span class="p">,</span><span class="w"> </span><span class="nt">"primitive"</span><span class="p">:</span><span class="w"> </span><span class="s2">"rcash.account-factory"</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"cover"</span><span class="p">,</span><span class="w"> </span><span class="nt">"tag"</span><span class="p">:</span><span class="w"> </span><span class="s2">"extend"</span><span class="p">,</span><span class="w"> </span><span class="nt">"primitive"</span><span class="p">:</span><span class="w"> </span><span class="s2">"rsure.policy"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"adapter"</span><span class="p">:</span><span class="w"> </span><span class="s2">"cover-adapter.rho"</span><span class="p">,</span><span class="w"> </span><span class="nt">"mode"</span><span class="p">:</span><span class="w"> </span><span class="s2">"adapter-only"</span><span class="p">,</span><span class="w"> </span><span class="nt">"whyExtend"</span><span class="p">:</span><span class="w"> </span><span class="s2">"…"</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"panel"</span><span class="p">,</span><span class="w"> </span><span class="nt">"tag"</span><span class="p">:</span><span class="w"> </span><span class="s2">"new"</span><span class="p">,</span><span class="w"> </span><span class="nt">"kind"</span><span class="p">:</span><span class="w"> </span><span class="s2">"custom"</span><span class="p">,</span><span class="w"> </span><span class="nt">"whyUnique"</span><span class="p">:</span><span class="w"> </span><span class="s2">"…"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"noRegisteredAlternative"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"rsure.claim"</span><span class="p">],</span><span class="w"> </span><span class="nt">"arms"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"select"</span><span class="p">,</span><span class="w"> </span><span class="s2">"verdict"</span><span class="p">]</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">"graph"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"vertices"</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span><span class="w"> </span><span class="nt">"edges"</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"conservation"</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="w"> </span><span class="nt">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"booking → account"</span><span class="p">,</span><span class="w"> </span><span class="nt">"assertion"</span><span class="p">:</span><span class="w"> </span><span class="s2">"…"</span><span class="w"> </span><span class="p">}],</span>
+<span class="w">  </span><span class="nt">"concurrency"</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="w"> </span><span class="nt">"risk"</span><span class="p">:</span><span class="w"> </span><span class="s2">"…"</span><span class="p">,</span><span class="w"> </span><span class="nt">"mechanism"</span><span class="p">:</span><span class="w"> </span><span class="s2">"…"</span><span class="w"> </span><span class="p">}],</span>
+<span class="w">  </span><span class="nt">"acceptance"</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="w"> </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"a1"</span><span class="p">,</span><span class="w"> </span><span class="nt">"given"</span><span class="p">:</span><span class="w"> </span><span class="s2">"…"</span><span class="p">,</span><span class="w"> </span><span class="nt">"when"</span><span class="p">:</span><span class="w"> </span><span class="s2">"…"</span><span class="p">,</span><span class="w"> </span><span class="nt">"then"</span><span class="p">:</span><span class="w"> </span><span class="s2">"…"</span><span class="w"> </span><span class="p">}]</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Tags:</p>
+<ul>
+<li><code>reuse</code> — call a registered primitive through an adapter.</li>
+<li><code>extend</code> — adapter-only, or a new-version proposal to the sibling repo. Deployed Rholang
+  is immutable; this never edits a sibling.</li>
+<li><code>new</code> — a genuinely uncovered capability. It needs <code>whyUnique</code>, a non-empty
+  <code>noRegisteredAlternative</code>, arms, and — if it duplicates a protected kind — an approved
+  override with <code>reason</code>, <code>approvedBy</code>, <code>approvedAt</code> and <code>scope</code>.</li>
+</ul>
+<p>Protected kinds: accounts, payments, escrow, insurance-claim, knowledge-claim, provenance,
+identity, booking, publication, bridge. The r-sure claim and r-gen claim are different
+kinds.</p>
+<h2 id="the-gate">The gate<a class="headerlink" href="#the-gate" title="Permanent link">#</a></h2>
+<div class="highlight"><pre><span></span><code>rhobuilder<span class="w"> </span>--json<span class="w"> </span>design<span class="w"> </span>check<span class="w"> </span>--path<span class="w"> </span>fixtures/designs/booking.json
+rhobuilder<span class="w"> </span>--json<span class="w"> </span>design<span class="w"> </span>check<span class="w"> </span>--path<span class="w"> </span>fixtures/designs/duplicate-escrow.json<span class="w">  </span><span class="c1"># exits 2</span>
+<span class="nb">printf</span><span class="w"> </span><span class="s1">'%s'</span><span class="w"> </span><span class="s2">"</span><span class="k">$(</span>cat<span class="w"> </span>design.json<span class="k">)</span><span class="s2">"</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>rhobuilder<span class="w"> </span>--json<span class="w"> </span>design<span class="w"> </span>validate<span class="w"> </span>--stdin
+</code></pre></div>
+
+<p>The report names every conflict (<code>component</code>, existing <code>primitive</code>, remediation) and lists
+<code>owed</code> components. A core-to-extension graph edge must be <code>optional</code>; the core never calls
+an app. A reuse target with no verified root on a target network is a warning, not a pass:
+the deploy plan refuses it later.</p>
+<p>The fixture set is the executable statement of the rule:</p>
+<ul>
+<li><code>fixtures/designs/booking.json</code> — passes; reuses payments and booking, extends cover,
+  adds one custom panel selector.</li>
+<li><code>fixtures/designs/duplicate-escrow.json</code> — refused; names r-sure and other escrow owners.</li>
+<li><code>fixtures/designs/duplicate-escrow-override.json</code> — passes with an override warning.</li>
+</ul>
+<h2 id="flags-and-exit-codes">Flags and exit codes<a class="headerlink" href="#flags-and-exit-codes" title="Permanent link">#</a></h2>
+<p><code>design check</code> refuses with exit 2; a <code>--stdin</code> read is bounded to 1 MiB. See
+<a href="command-reference.html">Command reference</a> for the full surface and JSON envelope.</p>
+<h2 id="read-next">Read next<a class="headerlink" href="#read-next" title="Permanent link">#</a></h2>
+<ul>
+<li><a href="registry.html">Registry and reuse</a> — the catalog and pins.</li>
+<li><a href="scaffold.html">Scaffolding</a> — what happens after the gate passes.</li>
+<li><a href="concepts.html">Core concepts</a> — reuse/extend/new without the schema.</li>
+</ul>
+      </article>
+      <nav class="pager" aria-label="Pages"><a class="prev" href="workflow.html"><div class="dir">← Previous</div><div class="t">Workflow</div></a><a class="next" href="scaffold.html"><div class="dir">Next</div><div class="t">Scaffolding and project status →</div></a></nav>
+      <footer class="footer">Built from rhobuilder <code>3ad31a6</code>.</footer>
+    </main>
+  </div>
+</div>
+<script src="../assets/roles.js"></script>
+<script src="../assets/docs.js"></script>
+</body>
+</html>

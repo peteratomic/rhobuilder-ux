@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>testnet-campaign.template.json — rhobuilder</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="stylesheet" href="../../assets/code.css">
+</head>
+<body data-page="evidence/testnet-campaign.template" data-root="../../">
+<div class="doc-shell">
+  <header class="topbar">
+    <a class="brand" href="../../index.html"><span class="brand-mark" aria-hidden="true">ρ</span>rhobuilder</a>
+    <nav class="topnav">
+      <a class="hide-sm" href="../../index.html">Choose your path</a>
+      <a class="hide-sm" href="../../docs/index.html">Manual</a>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="sidebar">Contents</button>
+    </nav>
+  </header>
+  <div class="doc-grid">
+    <nav class="sidebar" id="sidebar" aria-label="Manual"><h4>Front</h4><ul><li><a href="../index.html">rhobuilder</a></li><li><a href="../install.html">Install</a></li><li><a href="../start.html">Quickstart</a></li><li><a href="../ui.html">Studio tour</a></li><li><a href="../concepts.html">Core concepts</a></li><li><a href="../glossary.html">Glossary</a></li></ul><h4>Build loop</h4><ul><li><a href="../workflow.html">Workflow</a></li><li><a href="../design.html">Design and reuse</a></li><li><a href="../scaffold.html">Scaffolding and project status</a></li><li><a href="../formal.html">Lean and RhoApp</a></li><li><a href="../registry.html">Registry and reuse</a></li><li><a href="../testing.html">Testing and gates</a></li></ul><h4>Operate</h4><ul><li><a href="../dsh.html">DeepSeek Harness</a></li><li><a href="../devnet.html">Local devnet</a></li><li><a href="../baseline.html">Public testnet</a></li><li><a href="../mcp.html">MCP server</a></li><li><a href="../command-reference.html">Command reference</a></li><li><a href="../troubleshooting.html">Troubleshooting</a></li><li><a href="../faq.html">FAQ</a></li></ul><h4>Understand</h4><ul><li><a href="../architecture.html">Architecture</a></li><li><a href="../security.html">Security model</a></li><li><a href="../gates.html">Canonical gates</a></li><li><a href="../evidence.html">Evidence</a></li></ul><h4>Appendix</h4><ul><li><a href="../contributing.html">Contributing</a></li><li><a href="../review/non-technical-fitness.html">Non-technical fitness review</a></li></ul></nav>
+    <main>
+      <article class="prose">
+<h1>testnet-campaign.template.json</h1>
+<p>This is a template, not evidence. It must not be filled in until an approved campaign actually runs.</p>
+<p><a href="../evidence.html">← What the evidence records mean</a></p>
+<div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">"schema"</span><span class="p">:</span><span class="w"> </span><span class="s2">"rhobuilder.testnet-campaign/v1"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"template"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"campaign"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"all-five public-testnet baseline"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"network"</span><span class="p">:</span><span class="w"> </span><span class="s2">"testnet"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"networkId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"testnet-133b1d307b175012"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"genesisBlockHash"</span><span class="p">:</span><span class="w"> </span><span class="s2">"133b1d307b1750129cf0cfb69c4c8f950da21c4e8db2a6a076464d0ccfd98d44"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"approvalReference"</span><span class="p">:</span><span class="w"> </span><span class="s2">"REQUIRED: operator approval id or note"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"approvedBy"</span><span class="p">:</span><span class="w"> </span><span class="s2">"REQUIRED"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"approvedAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"REQUIRED"</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"pins"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"r-cash"</span><span class="p">:</span><span class="w"> </span><span class="s2">"REQUIRED"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"r-gen"</span><span class="p">:</span><span class="w"> </span><span class="s2">"REQUIRED"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"r-sure"</span><span class="p">:</span><span class="w"> </span><span class="s2">"REQUIRED"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"r-share"</span><span class="p">:</span><span class="w"> </span><span class="s2">"REQUIRED"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"r-print"</span><span class="p">:</span><span class="w"> </span><span class="s2">"REQUIRED"</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"roots"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"r-cash"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"candidate"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"committedManifest"</span><span class="p">:</span><span class="w"> </span><span class="s2">"REQUIRED"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"uncommittedCandidate"</span><span class="p">:</span><span class="w"> </span><span class="s2">"REQUIRED"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"accountFactoryCandidate"</span><span class="p">:</span><span class="w"> </span><span class="s2">"REQUIRED"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"verified"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">"r-gen"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"missing"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"verified"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">"r-sure"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"missing"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"verified"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">"r-share"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"missing"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"verified"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">"r-print"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"missing"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"verified"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"funding"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"faucetAmount"</span><span class="p">:</span><span class="w"> </span><span class="mi">30000000</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"dripsRequired"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"note"</span><span class="p">:</span><span class="w"> </span><span class="s2">"One 0.3 REV drip per address; consolidation and any additional spend need separate approval."</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"steps"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"step"</span><span class="p">:</span><span class="w"> </span><span class="s2">"baseline plan"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"not_run"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"evidence"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"step"</span><span class="p">:</span><span class="w"> </span><span class="s2">"baseline run --execute"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"not_run"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"evidence"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"step"</span><span class="p">:</span><span class="w"> </span><span class="s2">"baseline verify --deep"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"not_run"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"evidence"</span><span class="p">:</span><span class="w"> </span><span class="s2">""</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">"checks"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"identity"</span><span class="p">:</span><span class="w"> </span><span class="s2">"not_run"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"funding_arithmetic"</span><span class="p">:</span><span class="w"> </span><span class="s2">"not_run"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"partial_root"</span><span class="p">:</span><span class="w"> </span><span class="s2">"not_run"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"root_resolve"</span><span class="p">:</span><span class="w"> </span><span class="s2">"not_run"</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"notes"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">"This is a template, not evidence. Do not fill it in until an approved campaign actually runs."</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">"A partial r-cash root stops the campaign; reconcile it manually rather than deploying a duplicate."</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">"No keys or secrets belong in this file."</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+
+      </article>
+      <nav class="pager" aria-label="Pages"></nav>
+      <footer class="footer">Built from rhobuilder <code>3ad31a6</code>.</footer>
+    </main>
+  </div>
+</div>
+<script src="../../assets/roles.js"></script>
+<script src="../../assets/docs.js"></script>
+</body>
+</html>

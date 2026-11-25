@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Workflow — rhobuilder</title>
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="stylesheet" href="../assets/code.css">
+</head>
+<body data-page="workflow" data-root="../">
+<div class="doc-shell">
+  <header class="topbar">
+    <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">ρ</span>rhobuilder</a>
+    <nav class="topnav">
+      <a class="hide-sm" href="../index.html">Choose your path</a>
+      <a class="hide-sm" href="../docs/index.html">Manual</a>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="sidebar">Contents</button>
+    </nav>
+  </header>
+  <div class="doc-grid">
+    <nav class="sidebar" id="sidebar" aria-label="Manual"><h4>Front</h4><ul><li><a href="index.html">rhobuilder</a></li><li><a href="install.html">Install</a></li><li><a href="start.html">Quickstart</a></li><li><a href="ui.html">Studio tour</a></li><li><a href="concepts.html">Core concepts</a></li><li><a href="glossary.html">Glossary</a></li></ul><h4>Build loop</h4><ul><li><a href="workflow.html" aria-current="page">Workflow</a></li><li><a href="design.html">Design and reuse</a></li><li><a href="scaffold.html">Scaffolding and project status</a></li><li><a href="formal.html">Lean and RhoApp</a></li><li><a href="registry.html">Registry and reuse</a></li><li><a href="testing.html">Testing and gates</a></li></ul><h4>Operate</h4><ul><li><a href="dsh.html">DeepSeek Harness</a></li><li><a href="devnet.html">Local devnet</a></li><li><a href="baseline.html">Public testnet</a></li><li><a href="mcp.html">MCP server</a></li><li><a href="command-reference.html">Command reference</a></li><li><a href="troubleshooting.html">Troubleshooting</a></li><li><a href="faq.html">FAQ</a></li></ul><h4>Understand</h4><ul><li><a href="architecture.html">Architecture</a></li><li><a href="security.html">Security model</a></li><li><a href="gates.html">Canonical gates</a></li><li><a href="evidence.html">Evidence</a></li></ul><h4>Appendix</h4><ul><li><a href="contributing.html">Contributing</a></li><li><a href="review/non-technical-fitness.html">Non-technical fitness review</a></li></ul></nav>
+    <main>
+      <article class="prose">
+<h1 id="workflow">Workflow<a class="headerlink" href="#workflow" title="Permanent link">#</a></h1>
+<p><code>/rhobuilder-build &lt;idea or design.json&gt;</code> runs this loop. The CLI equivalent is the sequence
+<code>design check</code>, <code>new</code>, <code>deploy plan</code>, then <code>deploy execute</code> in the app directory.</p>
+<ol>
+<li><strong>Probe.</strong> Resolve the network, compare networkId, shard, genesis block hash and node
+   build with the registry, and confirm registry freshness. Public testnet uses
+   status/capabilities/shards/blocks, never an exploratory loop. See <a href="registry.html">Registry</a>.</li>
+<li><strong>Design.</strong> Interview for the unique value, actors, capabilities, resources, lifecycle,
+   value paths, failure/remedy and acceptance. Write <code>design.json</code>
+   (<code>rhobuilder.design/v1</code>) and <code>spec/design.md</code>. The dashboard composer can build, validate
+   and save the same document; model the unique interaction protocol, not a CRUD table. See
+   <a href="design.html">Design and reuse</a>.</li>
+<li><strong>Reuse.</strong> Query the registry and graph. Tag every component <code>reuse</code>, <code>extend</code> or <code>new</code>.
+   <code>extend</code> is adapter-only or a sibling proposal; deployed Rholang is immutable. A
+   duplicate commodity primitive without an approved override stops the loop.</li>
+<li><strong>Scaffold.</strong> <code>rhobuilder new --design design.json --template full|headless</code>. The target
+   becomes a DSH project root with its own <code>.dsh/skills</code> and launcher overlay. Plan first;
+   apply only after the user confirms. See <a href="scaffold.html">Scaffolding</a>.</li>
+<li><strong>Implement.</strong> Rholang contracts and adapters. Every mutating arm needs a refusal and
+   idempotency test; every value path needs conservation.</li>
+<li><strong>Prove.</strong> Lean model and flow obligations. <code>owed</code> is first-class; <code>proved-model</code> is the
+   ceiling, never a refinement. See <a href="formal.html">Lean and RhoApp</a>.</li>
+<li><strong>Test.</strong> Static gates, parser check when the pinned node is present, docs, formal, then
+   devnet install and behavioural suites. A not-run suite is not a pass. See
+   <a href="testing.html">Testing and gates</a>.</li>
+<li><strong>Plan deploy.</strong> Reuse registered primitives, deploy only new contracts, and refuse a
+   duplicate, missing dependency, identity mismatch or mainnet. <code>rhobuilder deploy plan</code> is
+   read-only.</li>
+<li><strong>Execute (CLI only).</strong> Signed deploy with the finality ladder and a manifest. Testnet
+   requires <code>--allow-live</code> and a confirmation token. See <a href="security.html">Security model</a>.</li>
+<li><strong>Close.</strong> Audit registers, docs/status labels, manifests and next steps. Report
+    <code>Scaffold</code>, <code>Implemented</code>, <code>Tested</code>, <code>Proved model</code>, <code>Owed</code> and <code>Not run</code> separately; do
+    not collapse them into “done”.</li>
+</ol>
+<h2 id="where-each-step-lives">Where each step lives<a class="headerlink" href="#where-each-step-lives" title="Permanent link">#</a></h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Detail page</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Probe / registry</td>
+<td><a href="registry.html">Registry and reuse</a></td>
+</tr>
+<tr>
+<td>Design</td>
+<td><a href="design.html">Design and reuse</a></td>
+</tr>
+<tr>
+<td>Scaffold</td>
+<td><a href="scaffold.html">Scaffolding and project status</a></td>
+</tr>
+<tr>
+<td>Prove</td>
+<td><a href="formal.html">Lean and RhoApp</a></td>
+</tr>
+<tr>
+<td>Test</td>
+<td><a href="testing.html">Testing and gates</a></td>
+</tr>
+<tr>
+<td>Execute</td>
+<td><a href="baseline.html">Public testnet</a>, <a href="security.html">Security model</a></td>
+</tr>
+<tr>
+<td>Commands</td>
+<td><a href="command-reference.html">Command reference</a></td>
+</tr>
+</tbody>
+</table></div>
+      </article>
+      <nav class="pager" aria-label="Pages"><a class="prev" href="glossary.html"><div class="dir">← Previous</div><div class="t">Glossary</div></a><a class="next" href="design.html"><div class="dir">Next</div><div class="t">Design and reuse →</div></a></nav>
+      <footer class="footer">Built from rhobuilder <code>3ad31a6</code>.</footer>
+    </main>
+  </div>
+</div>
+<script src="../assets/roles.js"></script>
+<script src="../assets/docs.js"></script>
+</body>
+</html>

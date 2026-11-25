@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Core concepts — rhobuilder</title>
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="stylesheet" href="../assets/code.css">
+</head>
+<body data-page="concepts" data-root="../">
+<div class="doc-shell">
+  <header class="topbar">
+    <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">ρ</span>rhobuilder</a>
+    <nav class="topnav">
+      <a class="hide-sm" href="../index.html">Choose your path</a>
+      <a class="hide-sm" href="../docs/index.html">Manual</a>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="sidebar">Contents</button>
+    </nav>
+  </header>
+  <div class="doc-grid">
+    <nav class="sidebar" id="sidebar" aria-label="Manual"><h4>Front</h4><ul><li><a href="index.html">rhobuilder</a></li><li><a href="install.html">Install</a></li><li><a href="start.html">Quickstart</a></li><li><a href="ui.html">Studio tour</a></li><li><a href="concepts.html" aria-current="page">Core concepts</a></li><li><a href="glossary.html">Glossary</a></li></ul><h4>Build loop</h4><ul><li><a href="workflow.html">Workflow</a></li><li><a href="design.html">Design and reuse</a></li><li><a href="scaffold.html">Scaffolding and project status</a></li><li><a href="formal.html">Lean and RhoApp</a></li><li><a href="registry.html">Registry and reuse</a></li><li><a href="testing.html">Testing and gates</a></li></ul><h4>Operate</h4><ul><li><a href="dsh.html">DeepSeek Harness</a></li><li><a href="devnet.html">Local devnet</a></li><li><a href="baseline.html">Public testnet</a></li><li><a href="mcp.html">MCP server</a></li><li><a href="command-reference.html">Command reference</a></li><li><a href="troubleshooting.html">Troubleshooting</a></li><li><a href="faq.html">FAQ</a></li></ul><h4>Understand</h4><ul><li><a href="architecture.html">Architecture</a></li><li><a href="security.html">Security model</a></li><li><a href="gates.html">Canonical gates</a></li><li><a href="evidence.html">Evidence</a></li></ul><h4>Appendix</h4><ul><li><a href="contributing.html">Contributing</a></li><li><a href="review/non-technical-fitness.html">Non-technical fitness review</a></li></ul></nav>
+    <main>
+      <article class="prose">
+<h1 id="core-concepts">Core concepts<a class="headerlink" href="#core-concepts" title="Permanent link">#</a></h1>
+<p><code>rhobuilder</code> assumes most of a dApp is already on-chain. The author should write only the
+part that is genuinely new and call the existing primitive graph for the rest.</p>
+<h2 id="commodity-vs-unique">Commodity vs unique<a class="headerlink" href="#commodity-vs-unique" title="Permanent link">#</a></h2>
+<ul>
+<li><strong>Commodity</strong> — accounts, payments, escrow, insurance, booking capacity, provenance,
+  publishing. These already have owners: r-cash, r-sure, r-share, r-gen and r-print.</li>
+<li><strong>Unique</strong> — the coordination, policy, selection rule or state machine that no existing
+  primitive covers. This is what the design and the <code>new</code> component must justify.</li>
+</ul>
+<p>The reuse gate refuses a <code>new</code> component that duplicates a protected commodity unless an
+operator records an approved override. Rebuilding a commodity is the default failure mode.</p>
+<h2 id="the-primitive-graph">The primitive graph<a class="headerlink" href="#the-primitive-graph" title="Permanent link">#</a></h2>
+<p>The registry is a curated graph, not an indexer. A primitive is a capability owned by
+another app; an edge is a call or reference between components.</p>
+<div class="highlight"><pre><span></span><code>r-cash accounts ──payments──► app booking ──cover──► r-sure policy
+       ▲                           │
+       └──────── capacity ─────── r-share
+                                   │
+                              provenance ──► r-gen
+</code></pre></div>
+
+<p>A <code>rho:id</code> is an unforgeable on-chain address. A <strong>root</strong> is an app’s directory contract
+that resolves component keys to <code>rho:id</code>s. A lookup proves resolution, not code identity;
+the registry is the identity source of truth.</p>
+<h2 id="reuse-extend-new">Reuse, extend, new<a class="headerlink" href="#reuse-extend-new" title="Permanent link">#</a></h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Tag</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>reuse</code></td>
+<td>Call a registered primitive through an adapter and resolve its component key.</td>
+</tr>
+<tr>
+<td><code>extend</code></td>
+<td>Adapter-only, or a new-version proposal to the sibling repository. Deployed Rholang is immutable.</td>
+</tr>
+<tr>
+<td><code>new</code></td>
+<td>A genuinely uncovered capability, with <code>whyUnique</code>, checked alternatives and a recorded override if the kind is protected.</td>
+</tr>
+</tbody>
+</table></div>
+<p>An <strong>adapter</strong> is a small local contract that translates the app’s needs to an existing
+primitive’s interface. It never edits the sibling repository.</p>
+<h2 id="cells-and-state">Cells and state<a class="headerlink" href="#cells-and-state" title="Permanent link">#</a></h2>
+<p>A <strong>linear cell</strong> is one state resource taken and reposted exactly once. Deploy atomicity
+and linearity are the reason the formal library exists. A component’s mutating <strong>arms</strong>
+are the operations that need refusal, idempotency and conservation tests.</p>
+<h2 id="status-vocabulary">Status vocabulary<a class="headerlink" href="#status-vocabulary" title="Permanent link">#</a></h2>
+<p>A project moves through separate claims; one does not imply the next:</p>
+<div class="highlight"><pre><span></span><code>Draft ──► Scaffold ──► Implemented ──► Tested ──► Proved model
+              │              │             │
+              └── Owed ──────┴── Not run ──┘
+</code></pre></div>
+
+<ul>
+<li><strong>Draft</strong> — a validated design saved by the composer; no project files implied.</li>
+<li><strong>Scaffold</strong> — generated skeleton; the unique arms and model are still the author’s work.</li>
+<li><strong>Implemented</strong> — contracts/adapters exist and a deployment record or passing suite
+  supports the claim.</li>
+<li><strong>Tested</strong> — recorded suites pass; a missing or throttled run is <code>not_run</code>.</li>
+<li><strong>Proved model</strong> — a theorem about the shallow Lean model, never a Rholang refinement.</li>
+<li><strong>Owed</strong> — a proof obligation not written yet; honest and first-class.</li>
+<li><strong>Not run</strong> — the check did not execute. It is not a pass.</li>
+<li><strong>Refused</strong> — the design or reuse gate rejected the input.</li>
+</ul>
+<p><code>verified</code> is reserved for a signed Root resolve or a deployment record; it is not a synonym
+for a Lean theorem or a static check.</p>
+<h2 id="networks">Networks<a class="headerlink" href="#networks" title="Permanent link">#</a></h2>
+<ul>
+<li><strong>Devnet</strong> — local disposable chain; deploys allowed, keys may live in the installation.</li>
+<li><strong>Testnet</strong> — public, live, gated; requires explicit approval, a funded key and an
+  identity/plan confirmation token. The r-cash account-factory candidate is the current
+  blocker.</li>
+<li><strong>Mainnet</strong> — no live rhovision rholo mainnet; the profile is read-only and refuses
+  deploys before HTTP.</li>
+</ul>
+<h2 id="read-next">Read next<a class="headerlink" href="#read-next" title="Permanent link">#</a></h2>
+<ul>
+<li><a href="workflow.html">Workflow</a> — the end-to-end loop.</li>
+<li><a href="glossary.html">Glossary</a> — one-line definitions.</li>
+<li><a href="design.html">Design and reuse</a> — the document and gate.</li>
+<li><a href="testing.html">Testing and gates</a> — what each status actually means.</li>
+</ul>
+      </article>
+      <nav class="pager" aria-label="Pages"><a class="prev" href="ui.html"><div class="dir">← Previous</div><div class="t">Studio tour</div></a><a class="next" href="glossary.html"><div class="dir">Next</div><div class="t">Glossary →</div></a></nav>
+      <footer class="footer">Built from rhobuilder <code>3ad31a6</code>.</footer>
+    </main>
+  </div>
+</div>
+<script src="../assets/roles.js"></script>
+<script src="../assets/docs.js"></script>
+</body>
+</html>

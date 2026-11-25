@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Glossary — rhobuilder</title>
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="stylesheet" href="../assets/code.css">
+</head>
+<body data-page="glossary" data-root="../">
+<div class="doc-shell">
+  <header class="topbar">
+    <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">ρ</span>rhobuilder</a>
+    <nav class="topnav">
+      <a class="hide-sm" href="../index.html">Choose your path</a>
+      <a class="hide-sm" href="../docs/index.html">Manual</a>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="sidebar">Contents</button>
+    </nav>
+  </header>
+  <div class="doc-grid">
+    <nav class="sidebar" id="sidebar" aria-label="Manual"><h4>Front</h4><ul><li><a href="index.html">rhobuilder</a></li><li><a href="install.html">Install</a></li><li><a href="start.html">Quickstart</a></li><li><a href="ui.html">Studio tour</a></li><li><a href="concepts.html">Core concepts</a></li><li><a href="glossary.html" aria-current="page">Glossary</a></li></ul><h4>Build loop</h4><ul><li><a href="workflow.html">Workflow</a></li><li><a href="design.html">Design and reuse</a></li><li><a href="scaffold.html">Scaffolding and project status</a></li><li><a href="formal.html">Lean and RhoApp</a></li><li><a href="registry.html">Registry and reuse</a></li><li><a href="testing.html">Testing and gates</a></li></ul><h4>Operate</h4><ul><li><a href="dsh.html">DeepSeek Harness</a></li><li><a href="devnet.html">Local devnet</a></li><li><a href="baseline.html">Public testnet</a></li><li><a href="mcp.html">MCP server</a></li><li><a href="command-reference.html">Command reference</a></li><li><a href="troubleshooting.html">Troubleshooting</a></li><li><a href="faq.html">FAQ</a></li></ul><h4>Understand</h4><ul><li><a href="architecture.html">Architecture</a></li><li><a href="security.html">Security model</a></li><li><a href="gates.html">Canonical gates</a></li><li><a href="evidence.html">Evidence</a></li></ul><h4>Appendix</h4><ul><li><a href="contributing.html">Contributing</a></li><li><a href="review/non-technical-fitness.html">Non-technical fitness review</a></li></ul></nav>
+    <main>
+      <article class="prose">
+<h1 id="glossary">Glossary<a class="headerlink" href="#glossary" title="Permanent link">#</a></h1>
+<p>Short definitions. See <a href="concepts.html">Core concepts</a> for the narrative and
+<a href="testing.html">Testing and gates</a> for operational meaning.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>adapter</strong></td>
+<td>A local contract that maps an app’s interface to an existing primitive without editing the sibling repo.</td>
+</tr>
+<tr>
+<td><strong>arm</strong></td>
+<td>A mutating operation on a component; each arm needs refusal, idempotency and (where value moves) conservation evidence.</td>
+</tr>
+<tr>
+<td><strong>chain call</strong></td>
+<td>A signed term submitted by the CLI for local app suites. Never exposed through DSH or MCP.</td>
+</tr>
+<tr>
+<td><strong>devnet</strong></td>
+<td>Disposable local rholo chain used for installs and behavioural suites.</td>
+</tr>
+<tr>
+<td><strong>DSH</strong></td>
+<td>DeepSeek Harness, the Node/Cordis agent runtime that hosts the studio, plugin and skills.</td>
+</tr>
+<tr>
+<td><strong>gated</strong></td>
+<td>A live action that requires explicit approval, identity/plan confirmation and a funded key.</td>
+</tr>
+<tr>
+<td><strong>genesis</strong></td>
+<td>The chain’s first block; its hash is part of network identity.</td>
+</tr>
+<tr>
+<td><strong>linear cell</strong></td>
+<td>One state resource taken and reposted exactly once; the basis of the formal model.</td>
+</tr>
+<tr>
+<td><strong>mainnet</strong></td>
+<td>No live rhovision rholo mainnet; profile refuses deploys.</td>
+</tr>
+<tr>
+<td><strong><code>not_run</code></strong></td>
+<td>A check that did not execute because a prerequisite was missing or the node was unhealthy. Not a pass.</td>
+</tr>
+<tr>
+<td><strong><code>owed</code></strong></td>
+<td>A proof obligation not written yet; accepted by default, rejected by <code>formal check --strict</code>.</td>
+</tr>
+<tr>
+<td><strong>phlo</strong></td>
+<td>The compute resource paid for a deploy.</td>
+</tr>
+<tr>
+<td><strong>primitive</strong></td>
+<td>A reusable on-chain capability owned by another app, such as r-cash accounts or r-sure escrow.</td>
+</tr>
+<tr>
+<td><strong><code>proved-model</code></strong></td>
+<td>A theorem about the shallow Lean model, never a refinement of deployed Rholang.</td>
+</tr>
+<tr>
+<td><strong><code>proved-conformance</code></strong></td>
+<td>A stronger, still bounded claim requiring a theorem, corpus vector and suite assertion.</td>
+</tr>
+<tr>
+<td><strong>registry</strong></td>
+<td>The curated primitive/edge catalog and pins; not an on-chain indexer.</td>
+</tr>
+<tr>
+<td><strong>REV</strong></td>
+<td>The native value unit used by r-cash and the faucet.</td>
+</tr>
+<tr>
+<td><strong><code>rho:id</code></strong></td>
+<td>An unforgeable on-chain address for a contract or component.</td>
+</tr>
+<tr>
+<td><strong>root</strong></td>
+<td>An app’s directory contract that resolves component keys to <code>rho:id</code>s.</td>
+</tr>
+<tr>
+<td><strong>rholo</strong></td>
+<td>The blockchain these dApps run on.</td>
+</tr>
+<tr>
+<td><strong>scaffold</strong></td>
+<td>A generated project skeleton; not a finished app.</td>
+</tr>
+<tr>
+<td><strong>testnet</strong></td>
+<td>The public gated rholo testnet at <code>https://testnet.rhobot.net</code>.</td>
+</tr>
+<tr>
+<td><strong>verified</strong></td>
+<td>A signed Root resolve or a verified deployment record; not a Lean or static-check result.</td>
+</tr>
+<tr>
+<td><strong>witness / evidence</strong></td>
+<td>A machine-readable record of what actually ran. Evidence is not authority.</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="statuses-at-a-glance">Statuses at a glance<a class="headerlink" href="#statuses-at-a-glance" title="Permanent link">#</a></h2>
+<p><code>Draft</code>, <code>Scaffold</code>, <code>Implemented</code>, <code>Tested</code>, <code>Proved model</code>, <code>Owed</code>, <code>Not run</code>, <code>Refused</code>,
+<code>Gated</code>, <code>Verified</code>. Only the first six describe project maturity; the rest describe a
+refusal, a gate or a missing run.</p>
+      </article>
+      <nav class="pager" aria-label="Pages"><a class="prev" href="concepts.html"><div class="dir">← Previous</div><div class="t">Core concepts</div></a><a class="next" href="workflow.html"><div class="dir">Next</div><div class="t">Workflow →</div></a></nav>
+      <footer class="footer">Built from rhobuilder <code>3ad31a6</code>.</footer>
+    </main>
+  </div>
+</div>
+<script src="../assets/roles.js"></script>
+<script src="../assets/docs.js"></script>
+</body>
+</html>

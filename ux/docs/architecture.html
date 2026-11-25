@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Architecture — rhobuilder</title>
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="stylesheet" href="../assets/code.css">
+</head>
+<body data-page="architecture" data-root="../">
+<div class="doc-shell">
+  <header class="topbar">
+    <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">ρ</span>rhobuilder</a>
+    <nav class="topnav">
+      <a class="hide-sm" href="../index.html">Choose your path</a>
+      <a class="hide-sm" href="../docs/index.html">Manual</a>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="sidebar">Contents</button>
+    </nav>
+  </header>
+  <div class="doc-grid">
+    <nav class="sidebar" id="sidebar" aria-label="Manual"><h4>Front</h4><ul><li><a href="index.html">rhobuilder</a></li><li><a href="install.html">Install</a></li><li><a href="start.html">Quickstart</a></li><li><a href="ui.html">Studio tour</a></li><li><a href="concepts.html">Core concepts</a></li><li><a href="glossary.html">Glossary</a></li></ul><h4>Build loop</h4><ul><li><a href="workflow.html">Workflow</a></li><li><a href="design.html">Design and reuse</a></li><li><a href="scaffold.html">Scaffolding and project status</a></li><li><a href="formal.html">Lean and RhoApp</a></li><li><a href="registry.html">Registry and reuse</a></li><li><a href="testing.html">Testing and gates</a></li></ul><h4>Operate</h4><ul><li><a href="dsh.html">DeepSeek Harness</a></li><li><a href="devnet.html">Local devnet</a></li><li><a href="baseline.html">Public testnet</a></li><li><a href="mcp.html">MCP server</a></li><li><a href="command-reference.html">Command reference</a></li><li><a href="troubleshooting.html">Troubleshooting</a></li><li><a href="faq.html">FAQ</a></li></ul><h4>Understand</h4><ul><li><a href="architecture.html" aria-current="page">Architecture</a></li><li><a href="security.html">Security model</a></li><li><a href="gates.html">Canonical gates</a></li><li><a href="evidence.html">Evidence</a></li></ul><h4>Appendix</h4><ul><li><a href="contributing.html">Contributing</a></li><li><a href="review/non-technical-fitness.html">Non-technical fitness review</a></li></ul></nav>
+    <main>
+      <article class="prose">
+<h1 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">#</a></h1>
+<p><code>rhobuilder</code> is a Rust decision core with several thin front ends. The front ends validate
+and forward; they do not reimplement the gates or sign.</p>
+<div class="highlight"><pre><span></span><code>┌───────────────────────────── DSH / editor / agent ─────────────────────────────┐
+│  studio UI (client.js + host index.js)   native plugin (bridge.js)   MCP server │
+└───────────────┬──────────────────────────────────┬──────────────────┬──────────┘
+                │ /rhobuilder/api/*                │ tools            │ MCP tools
+                └──────────────────┬───────────────┴──────────────────┘
+                                   ▼
+                     rhobuilder CLI (`--json` envelopes)
+        ┌──────────────┬──────────────┬──────────────┬──────────────┐
+        │ core/design  │ registry     │ formal/Lean  │ chain/executor│
+        │ scaffold     │ reuse gate   │ gates        │ node client   │
+        └──────────────┴──────────────┴──────────────┴──────────────┘
+                                   │
+             registry/ templates/ gates/ formal/ fixtures/ evidence/
+                                   │
+                         rholo devnet / gated testnet
+</code></pre></div>
+
+<h2 id="components">Components<a class="headerlink" href="#components" title="Permanent link">#</a></h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Path</th>
+<th>Responsibility</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>crates/rhobuilder-cli</code></td>
+<td>Stable JSON command surface, exit codes and live gates.</td>
+</tr>
+<tr>
+<td><code>crates/rhobuilder-core</code></td>
+<td>Design model/validation, scaffold, formal checks, project status and contracts.</td>
+</tr>
+<tr>
+<td><code>crates/rhobuilder-registry</code></td>
+<td>Curated primitive graph, pins, drift and reuse gate.</td>
+</tr>
+<tr>
+<td><code>crates/rhobuilder-chain</code></td>
+<td>Identity probes, executor, funding, Root verification and keystore.</td>
+</tr>
+<tr>
+<td><code>crates/rhobuilder-formal</code> / <code>gates</code></td>
+<td>Lean vendoring/obligations and canonical gate orchestration.</td>
+</tr>
+<tr>
+<td><code>agents/deepseek/</code></td>
+<td>DSH plugin, studio UI, harness config, presets and the build procedure.</td>
+</tr>
+<tr>
+<td><code>mcp/</code></td>
+<td>Read-only/plan MCP server over the CLI.</td>
+</tr>
+<tr>
+<td><code>tools/</code></td>
+<td>Launcher, devnet lifecycle, packaging, skill export and checkers.</td>
+</tr>
+<tr>
+<td><code>registry/</code>, <code>templates/</code>, <code>formal/</code>, <code>gates/</code>, <code>fixtures/</code></td>
+<td>Data and generated-project sources.</td>
+</tr>
+<tr>
+<td><code>docs/</code></td>
+<td>This book and the measured P5 evidence.</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="data-flow">Data flow<a class="headerlink" href="#data-flow" title="Permanent link">#</a></h2>
+<div class="highlight"><pre><span></span><code>idea → design.json → design/reuse gate → scaffold
+     → project gates + Lean + devnet suites
+     → deploy plan → CLI-only signed execute → Root/manifest evidence
+</code></pre></div>
+
+<p>The studio’s composer calls <code>design validate --stdin</code>; a validated save writes only
+<code>design.json</code>. The dashboard reads registry/evidence files and fixed read-only CLI
+commands. The plugin exposes seven CLI-backed tools. MCP exposes a read-only/plan subset.</p>
+<h2 id="trust-boundaries">Trust boundaries<a class="headerlink" href="#trust-boundaries" title="Permanent link">#</a></h2>
+<ul>
+<li>The CLI owns every decision: validation, identity, plan digests, key checks and signing.</li>
+<li>The DSH plugin and MCP server can plan/read; they cannot apply a scaffold, sign, fund or
+  write a key.</li>
+<li>The studio host can serve local files behind DSH’s browser-token fence and write one
+  contained <code>design.json</code>; it never returns secrets.</li>
+<li>The executor never edits a sibling repository; it consumes vendored, pinned terms.</li>
+<li>A stored manifest is evidence, not authority; <code>baseline verify --deep</code> re-resolves roots.</li>
+</ul>
+<p>See <a href="security.html">Security model</a>, <a href="testing.html">Testing and gates</a> and
+<a href="command-reference.html">Command reference</a>.</p>
+      </article>
+      <nav class="pager" aria-label="Pages"><a class="prev" href="faq.html"><div class="dir">← Previous</div><div class="t">FAQ</div></a><a class="next" href="security.html"><div class="dir">Next</div><div class="t">Security model →</div></a></nav>
+      <footer class="footer">Built from rhobuilder <code>3ad31a6</code>.</footer>
+    </main>
+  </div>
+</div>
+<script src="../assets/roles.js"></script>
+<script src="../assets/docs.js"></script>
+</body>
+</html>

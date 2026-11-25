@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DeepSeek Harness — rhobuilder</title>
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="stylesheet" href="../assets/code.css">
+</head>
+<body data-page="dsh" data-root="../">
+<div class="doc-shell">
+  <header class="topbar">
+    <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">ρ</span>rhobuilder</a>
+    <nav class="topnav">
+      <a class="hide-sm" href="../index.html">Choose your path</a>
+      <a class="hide-sm" href="../docs/index.html">Manual</a>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="sidebar">Contents</button>
+    </nav>
+  </header>
+  <div class="doc-grid">
+    <nav class="sidebar" id="sidebar" aria-label="Manual"><h4>Front</h4><ul><li><a href="index.html">rhobuilder</a></li><li><a href="install.html">Install</a></li><li><a href="start.html">Quickstart</a></li><li><a href="ui.html">Studio tour</a></li><li><a href="concepts.html">Core concepts</a></li><li><a href="glossary.html">Glossary</a></li></ul><h4>Build loop</h4><ul><li><a href="workflow.html">Workflow</a></li><li><a href="design.html">Design and reuse</a></li><li><a href="scaffold.html">Scaffolding and project status</a></li><li><a href="formal.html">Lean and RhoApp</a></li><li><a href="registry.html">Registry and reuse</a></li><li><a href="testing.html">Testing and gates</a></li></ul><h4>Operate</h4><ul><li><a href="dsh.html" aria-current="page">DeepSeek Harness</a></li><li><a href="devnet.html">Local devnet</a></li><li><a href="baseline.html">Public testnet</a></li><li><a href="mcp.html">MCP server</a></li><li><a href="command-reference.html">Command reference</a></li><li><a href="troubleshooting.html">Troubleshooting</a></li><li><a href="faq.html">FAQ</a></li></ul><h4>Understand</h4><ul><li><a href="architecture.html">Architecture</a></li><li><a href="security.html">Security model</a></li><li><a href="gates.html">Canonical gates</a></li><li><a href="evidence.html">Evidence</a></li></ul><h4>Appendix</h4><ul><li><a href="contributing.html">Contributing</a></li><li><a href="review/non-technical-fitness.html">Non-technical fitness review</a></li></ul></nav>
+    <main>
+      <article class="prose">
+<h1 id="deepseek-harness">DeepSeek Harness<a class="headerlink" href="#deepseek-harness" title="Permanent link">#</a></h1>
+<p>DSH is MIT, a 0.2 developer preview, Node/Cordis based. <code>rhobuilder</code> targets the 0.2 line
+and keeps every DSH-specific value in <code>agents/deepseek/harness.toml</code> and
+<code>tools/launch_dsh.py</code>.</p>
+<h2 id="what-the-launcher-does">What the launcher does<a class="headerlink" href="#what-the-launcher-does" title="Permanent link">#</a></h2>
+<ol>
+<li>exports the curated skill catalog to <code>.dsh/skills/&lt;name&gt;/SKILL.md</code>;</li>
+<li>writes a mode-specific overlay to <code>.dsh/patches/rhobuilder-&lt;mode&gt;.yml</code>;</li>
+<li>starts the shipped <code>web</code> or <code>headless</code> profile with <code>--patch</code>.</li>
+</ol>
+<div class="highlight"><pre><span></span><code>python3<span class="w"> </span>tools/launch_dsh.py<span class="w"> </span>--check<span class="w"> </span>--json
+python3<span class="w"> </span>tools/launch_dsh.py<span class="w"> </span>--print-config<span class="w"> </span>headless
+python3<span class="w"> </span>tools/launch_dsh.py<span class="w"> </span>web
+python3<span class="w"> </span>tools/launch_dsh.py<span class="w"> </span>headless<span class="w"> </span><span class="s2">"Design a bookable service"</span>
+</code></pre></div>
+
+<p><code>--check</code> and <code>--print-config</code> are read-only. A launch writes the skill export and the
+overlay, then runs DSH. The web launch mounts the studio; see <a href="ui.html">Studio tour</a>. Install
+and version compatibility live in <a href="install.html">Install</a>.</p>
+<h2 id="the-plugin">The plugin<a class="headerlink" href="#the-plugin" title="Permanent link">#</a></h2>
+<p><code>agents/deepseek/plugin/index.js</code> registers seven tools over <code>rhobuilder --json</code>:</p>
+<ul>
+<li><code>rhobuilder_registry</code> — list/get/graph/verify/drift primitives.</li>
+<li><code>rhobuilder_design</code> — validate or report a design.</li>
+<li><code>rhobuilder_scaffold</code> — plan (default) or apply a skeleton.</li>
+<li><code>rhobuilder_check</code> — static/formal/full project gates via its Makefile.</li>
+<li><code>rhobuilder_status</code> — read-only project status and badges.</li>
+<li><code>rhobuilder_plan</code> — read-only deploy plan.</li>
+<li><code>rhobuilder_chain</code> — probe/status/deploy-status, read-only.</li>
+</ul>
+<p><code>bridge.js</code> maps every tool to a real CLI subcommand. <code>registry verify</code> is read-only by
+construction; the obsolete <code>--read-only</code> flag is gone. <code>chain explore</code> is not exposed: the
+node’s exploratory deploy cannot see the native registry, so the CLI uses a signed
+<code>chain call</code> only for local suites, never for DSH.</p>
+<p>The plugin imports nothing from <code>@deepseek-ai/*</code>; it mounts by absolute path with no
+<code>node_modules</code>. Its <code>spawn</code> is trusted host code, so the surface is narrow and never exposes
+a signed deploy.</p>
+<h2 id="skills-and-presets">Skills and presets<a class="headerlink" href="#skills-and-presets" title="Permanent link">#</a></h2>
+<p>The catalog is capped at 12 entries including the <code>/rhobuilder-build</code> procedure. The
+procedure orchestrates probe, design, reuse, scaffold, implement, prove, test and plan.
+Critical platform rules stay inline in each <code>SKILL.md</code>; DSH does not auto-read
+<code>references/</code>.</p>
+<p><code>--study build</code> enables Agent Teams and mounts the architect (root), reviewer and prover
+presets. Web and headless compose presets differently: web overwrites
+<code>agent-preset-registry</code>; headless inserts it plus the presets.</p>
+<h2 id="permissions-and-distribution">Permissions and distribution<a class="headerlink" href="#permissions-and-distribution" title="Permanent link">#</a></h2>
+<p>The launcher sets <code>DSH_PERMISSION_MODE=workspace-write</code>, a repo-local <code>DSH_HOME</code>, and never
+uses <code>danger-full-access</code> or <code>sdk-minimal</code>. There is no DSH plugin marketplace; install by
+cloning the repo and launching from it, or mount the dependency-free plugin by absolute path
+in your own overlay. A Claude Code <code>SKILL.md</code> export is secondary portability only.</p>
+<h2 id="read-next">Read next<a class="headerlink" href="#read-next" title="Permanent link">#</a></h2>
+<ul>
+<li><a href="ui.html">Studio tour</a> — what the web launch shows.</li>
+<li><a href="install.html">Install</a> — Node/DSH versions and the release tarball.</li>
+<li><a href="mcp.html">MCP server</a> — the optional read-only/plan lane.</li>
+</ul>
+      </article>
+      <nav class="pager" aria-label="Pages"><a class="prev" href="testing.html"><div class="dir">← Previous</div><div class="t">Testing and gates</div></a><a class="next" href="devnet.html"><div class="dir">Next</div><div class="t">Local devnet →</div></a></nav>
+      <footer class="footer">Built from rhobuilder <code>3ad31a6</code>.</footer>
+    </main>
+  </div>
+</div>
+<script src="../assets/roles.js"></script>
+<script src="../assets/docs.js"></script>
+</body>
+</html>

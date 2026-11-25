@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Non-technical fitness review — rhobuilder</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="stylesheet" href="../../assets/code.css">
+</head>
+<body data-page="review/non-technical-fitness" data-root="../../">
+<div class="doc-shell">
+  <header class="topbar">
+    <a class="brand" href="../../index.html"><span class="brand-mark" aria-hidden="true">ρ</span>rhobuilder</a>
+    <nav class="topnav">
+      <a class="hide-sm" href="../../index.html">Choose your path</a>
+      <a class="hide-sm" href="../../docs/index.html">Manual</a>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="sidebar">Contents</button>
+    </nav>
+  </header>
+  <div class="doc-grid">
+    <nav class="sidebar" id="sidebar" aria-label="Manual"><h4>Front</h4><ul><li><a href="../index.html">rhobuilder</a></li><li><a href="../install.html">Install</a></li><li><a href="../start.html">Quickstart</a></li><li><a href="../ui.html">Studio tour</a></li><li><a href="../concepts.html">Core concepts</a></li><li><a href="../glossary.html">Glossary</a></li></ul><h4>Build loop</h4><ul><li><a href="../workflow.html">Workflow</a></li><li><a href="../design.html">Design and reuse</a></li><li><a href="../scaffold.html">Scaffolding and project status</a></li><li><a href="../formal.html">Lean and RhoApp</a></li><li><a href="../registry.html">Registry and reuse</a></li><li><a href="../testing.html">Testing and gates</a></li></ul><h4>Operate</h4><ul><li><a href="../dsh.html">DeepSeek Harness</a></li><li><a href="../devnet.html">Local devnet</a></li><li><a href="../baseline.html">Public testnet</a></li><li><a href="../mcp.html">MCP server</a></li><li><a href="../command-reference.html">Command reference</a></li><li><a href="../troubleshooting.html">Troubleshooting</a></li><li><a href="../faq.html">FAQ</a></li></ul><h4>Understand</h4><ul><li><a href="../architecture.html">Architecture</a></li><li><a href="../security.html">Security model</a></li><li><a href="../gates.html">Canonical gates</a></li><li><a href="../evidence.html">Evidence</a></li></ul><h4>Appendix</h4><ul><li><a href="../contributing.html">Contributing</a></li><li><a href="../review/non-technical-fitness.html" aria-current="page">Non-technical fitness review</a></li></ul></nav>
+    <main>
+      <article class="prose">
+<h1 id="non-technical-fitness-review">Non-technical fitness review<a class="headerlink" href="#non-technical-fitness-review" title="Permanent link">#</a></h1>
+<p>This is historical acceptance evidence from the original audit, not the current user guide.
+The product has changed since the verdict; use <a href="../start.html">Quickstart</a> and
+<a href="../ui.html">Studio tour</a> for current instructions.</p>
+<p><strong>Verdict at review time:</strong> rhobuilder was a strong, honest developer/CI engine and a weak
+non-technical product. The technical gate was roughly <strong>7.5/10</strong>; the one-stop-shop
+experience was roughly <strong>2.5/10</strong> until the UI, readiness and packaging work landed.</p>
+<p>Each finding has a disposition and a traceability row to the UI or CLI change that
+addresses it.</p>
+<h2 id="what-is-genuinely-strong">What is genuinely strong<a class="headerlink" href="#what-is-genuinely-strong" title="Permanent link">#</a></h2>
+<ul>
+<li>Mainnet is refused before HTTP; testnet live actions require <code>--allow-live</code> plus an
+  identity+plan confirmation token.</li>
+<li>Keys stay mode 0600, gitignored and unprinted; devnet-named keys are refused on live
+  networks.</li>
+<li>Adopt-before-deploy and a partial-root stop prevent duplicate primitives.</li>
+<li><code>not_run</code> is a first-class result; a throttled devnet never reads as a pass.</li>
+<li>P5 is measured: five devnet roots, a generated app, and nine behavioural suites.</li>
+</ul>
+<h2 id="p0-blocks-non-technical-use">P0 — blocks non-technical use<a class="headerlink" href="#p0-blocks-non-technical-use" title="Permanent link">#</a></h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Finding</th>
+<th>Evidence</th>
+<th>Disposition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P0-1</td>
+<td>Preflight cannot fail on missing prerequisites; API key, npx DSH and cargo fallback are warnings, and Rust/Docker/Lean/mdBook/devnet are not probed.</td>
+<td><code>tools/launch_dsh.py:666-675</code>, <code>:764</code>, <code>:655-663</code></td>
+<td><strong>Fixed in this pass</strong>: hard <code>setup</code> verdict + UI readiness panel</td>
+</tr>
+<tr>
+<td>P0-2</td>
+<td>The release artifact is a bare binary plus docs; it cannot scaffold, check or plan because <code>registry/</code> and <code>templates/</code> are external.</td>
+<td><code>.github/workflows/release.yml:16-19</code>, <code>crates/rhobuilder-cli/src/main.rs:29-34</code></td>
+<td><strong>Fixed in this pass</strong>: complete release tarball + extraction self-test</td>
+</tr>
+<tr>
+<td>P0-3</td>
+<td>No design-authoring surface; <code>design.json</code> is hand-written or model-written and only validated after the fact.</td>
+<td><code>agents/deepseek/plugin/index.js:156-175</code>, <code>fixtures/designs/booking.json</code></td>
+<td><strong>Fixed</strong>: dashboard composer validates in memory and saves a validated <code>design.json</code> for continuity</td>
+</tr>
+<tr>
+<td>P0-4</td>
+<td>First launch is stock “DeepSeek Harness”: no rhobuilder title, onboarding, dashboard or quick actions.</td>
+<td>generated <code>.dsh/patches/rhobuilder-web.yml</code>; shipped web profile</td>
+<td><strong>Fixed in this pass</strong>: branded UI package + dashboard</td>
+</tr>
+<tr>
+<td>P0-5</td>
+<td>Devnet bring-up and funding are developer-machine work (Docker container, validator key, env, keys).</td>
+<td><code>crates/rhobuilder-chain/src/funding.rs:117-148</code>, <code>crates/rhobuilder-cli/src/main.rs:878-881</code></td>
+<td><strong>Fixed</strong>: <code>tools/devnet.py status/start/wait/onboard</code>; onboarding is explicit <code>--execute</code> and devnet-only. Creating a container from scratch remains external</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="p1-major-friction">P1 — major friction<a class="headerlink" href="#p1-major-friction" title="Permanent link">#</a></h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Finding</th>
+<th>Evidence</th>
+<th>Disposition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P1-1</td>
+<td>Curated skills omit the rho-calculus, CoC and Lean 4 skills that the build procedure tells the model to read.</td>
+<td><code>agents/deepseek/harness.toml:22-30</code>, <code>skills/rhobuilder-build.md:40-41</code></td>
+<td><strong>Fixed</strong>: add the three skills to the curated set</td>
+</tr>
+<tr>
+<td>P1-2</td>
+<td>Exit code 2 is overloaded across refusal, usage, identity and <code>not_run</code>.</td>
+<td><code>crates/rhobuilder-cli/src/main.rs:3-4</code>, <code>:2141</code>, <code>:2758-2763</code></td>
+<td><strong>Fixed</strong>: error envelopes carry <code>status</code> and <code>hint</code>; exit codes stay compatible</td>
+</tr>
+<tr>
+<td>P1-3</td>
+<td>Errors are developer jargon rather than actionable copy.</td>
+<td>e.g. <code>main.rs:947</code>, <code>:1036-1040</code>, <code>:697-699</code></td>
+<td><strong>Fixed</strong>: every emitted kind has a status and hint, and bridge errors lead with per-kind prose before the detail</td>
+</tr>
+<tr>
+<td>P1-4</td>
+<td>First build may silently clone <code>r-cash</code> and need network; no preflight.</td>
+<td><code>Cargo.toml</code> <code>rcash-sdk</code> git pin; <code>launch_dsh.py:74-77</code></td>
+<td><strong>Fixed</strong>: readiness reports the source-build/network path</td>
+</tr>
+<tr>
+<td>P1-5</td>
+<td>Local absolute-home defaults leak into docs and Make targets.</td>
+<td><code>README.md:44</code>, <code>Makefile:5</code></td>
+<td><strong>Fixed</strong>: remove machine-local defaults; package check rejects them</td>
+</tr>
+<tr>
+<td>P1-6</td>
+<td>Key-path containment is checked at keygen but not every key load.</td>
+<td><code>main.rs:782-785</code> vs <code>:840-846</code>, <code>:1116-1142</code>, <code>:1836-1886</code>, <code>:2597-2602</code></td>
+<td><strong>Fixed for live networks</strong>: every load calls <code>require_under</code>; disposable devnet keys may live in the installation</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="p2-polish">P2 — polish<a class="headerlink" href="#p2-polish" title="Permanent link">#</a></h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Finding</th>
+<th>Disposition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P2-1</td>
+<td>Generic scaffolds look finished; <code>owed</code> arms are not visible.</td>
+<td><strong>Fixed</strong>: <code>rhobuilder project status</code> and the dashboard Project status card render <code>Scaffold</code>, <code>Implemented</code>, <code>Tested</code>, <code>Proved model</code>, <code>Owed</code>, <code>Not run</code> and <code>Refused</code></td>
+</tr>
+<tr>
+<td>P2-2</td>
+<td>Evidence JSON contains <code>not_run</code>/<code>candidate</code> machine states that non-technical users misread.</td>
+<td><strong>Fixed</strong>: the dashboard renders measured evidence with plain statements and a raw-JSON disclosure</td>
+</tr>
+<tr>
+<td>P2-3</td>
+<td>Scaffold <code>confirm:true</code> is model-internal, not a user approval.</td>
+<td><strong>Surfaced</strong>: the dashboard shows a read-only plan/file count and the build skill requires explicit confirmation; applying remains a separate chat action</td>
+</tr>
+<tr>
+<td>P2-4</td>
+<td>Skill jargon has no user-facing glossary.</td>
+<td><strong>Fixed</strong>: landing hero + glossary below</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="task-trace-idea-repo-devnet-testnet">Task trace: idea → repo → devnet → testnet<a class="headerlink" href="#task-trace-idea-repo-devnet-testnet" title="Permanent link">#</a></h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Current affordance</th>
+<th>Reality</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Probe</td>
+<td><code>rhobuilder_chain</code> tool</td>
+<td>read-only; works</td>
+</tr>
+<tr>
+<td>Design</td>
+<td>composer + validate/save</td>
+<td>dashboard composer validates in memory and saves <code>design.json</code>; refused drafts write nothing</td>
+</tr>
+<tr>
+<td>Reuse</td>
+<td>design report</td>
+<td>refuses duplicate primitives; JSON report</td>
+</tr>
+<tr>
+<td>Scaffold</td>
+<td>plan/apply tool</td>
+<td>writes once; UI requires explicit apply</td>
+</tr>
+<tr>
+<td>Implement</td>
+<td>none</td>
+<td>agent/editor work</td>
+</tr>
+<tr>
+<td>Prove</td>
+<td>check formal</td>
+<td>needs <code>lake</code>; generic arms stay <code>owed</code></td>
+</tr>
+<tr>
+<td>Test</td>
+<td>check full</td>
+<td>needs a healthy devnet; otherwise <code>not_run</code></td>
+</tr>
+<tr>
+<td>Deploy plan</td>
+<td>plan tool</td>
+<td>read-only; refuses missing/duplicate/mainnet</td>
+</tr>
+<tr>
+<td>Deploy/baseline execute</td>
+<td>CLI only</td>
+<td>signed, gated, key-bearing</td>
+</tr>
+<tr>
+<td>Testnet baseline</td>
+<td>preflight/plan/verify read-only</td>
+<td><code>baseline preflight</code> names every blocker; execution remains CLI-only and gated</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="plain-language-glossary">Plain-language glossary<a class="headerlink" href="#plain-language-glossary" title="Permanent link">#</a></h2>
+<p>The glossary now lives in <a href="../glossary.html">Glossary</a>. It covers <code>rho:id</code>, primitives, roots,
+linear cells, <code>owed</code>, <code>not_run</code>, <code>proved-model</code> and the network terms.</p>
+<h2 id="traceability-to-the-ui-work">Traceability to the UI work<a class="headerlink" href="#traceability-to-the-ui-work" title="Permanent link">#</a></h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Finding</th>
+<th>UI/CLI surface</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P0-1, P0-5</td>
+<td>Dashboard Readiness panel; <code>launch_dsh --check</code> setup verdict; <code>tools/devnet.py status/start/wait/onboard</code></td>
+</tr>
+<tr>
+<td>P0-2</td>
+<td>Complete release tarball and launch wrapper</td>
+</tr>
+<tr>
+<td>P0-3</td>
+<td>Dashboard composer, <code>design validate --stdin</code>, contained <code>design-save</code>, design-check status</td>
+</tr>
+<tr>
+<td>P0-4</td>
+<td>Title, favicon, sidebar wordmark, hero card, Rhobuilder dashboard</td>
+</tr>
+<tr>
+<td>P1-1</td>
+<td>Curated skill list in <code>harness.toml</code></td>
+</tr>
+<tr>
+<td>P1-2, P1-3</td>
+<td>Status labels and humanized error copy</td>
+</tr>
+<tr>
+<td>P1-4</td>
+<td>Readiness “source build” warning</td>
+</tr>
+<tr>
+<td>P1-5</td>
+<td>Portable launcher/package paths</td>
+</tr>
+<tr>
+<td>P1-6</td>
+<td>CLI key-load containment</td>
+</tr>
+<tr>
+<td>P2-1..P2-4</td>
+<td>Status badges, evidence panel, apply confirmation, <a href="../glossary.html">Glossary</a></td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="boundary">Boundary<a class="headerlink" href="#boundary" title="Permanent link">#</a></h2>
+<p>The UI may read, plan, validate, start conversations and save a validated <code>design.json</code>.
+It must not write code, apply a scaffold, sign, fund, hold keys or execute deploys. Those
+operations remain CLI-only with explicit gates.</p>
+      </article>
+      <nav class="pager" aria-label="Pages"><a class="prev" href="../contributing.html"><div class="dir">← Previous</div><div class="t">Contributing</div></a></nav>
+      <footer class="footer">Built from rhobuilder <code>3ad31a6</code>.</footer>
+    </main>
+  </div>
+</div>
+<script src="../../assets/roles.js"></script>
+<script src="../../assets/docs.js"></script>
+</body>
+</html>

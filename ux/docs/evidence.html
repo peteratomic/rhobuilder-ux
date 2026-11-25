@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Evidence — rhobuilder</title>
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="stylesheet" href="../assets/code.css">
+</head>
+<body data-page="evidence" data-root="../">
+<div class="doc-shell">
+  <header class="topbar">
+    <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">ρ</span>rhobuilder</a>
+    <nav class="topnav">
+      <a class="hide-sm" href="../index.html">Choose your path</a>
+      <a class="hide-sm" href="../docs/index.html">Manual</a>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="sidebar">Contents</button>
+    </nav>
+  </header>
+  <div class="doc-grid">
+    <nav class="sidebar" id="sidebar" aria-label="Manual"><h4>Front</h4><ul><li><a href="index.html">rhobuilder</a></li><li><a href="install.html">Install</a></li><li><a href="start.html">Quickstart</a></li><li><a href="ui.html">Studio tour</a></li><li><a href="concepts.html">Core concepts</a></li><li><a href="glossary.html">Glossary</a></li></ul><h4>Build loop</h4><ul><li><a href="workflow.html">Workflow</a></li><li><a href="design.html">Design and reuse</a></li><li><a href="scaffold.html">Scaffolding and project status</a></li><li><a href="formal.html">Lean and RhoApp</a></li><li><a href="registry.html">Registry and reuse</a></li><li><a href="testing.html">Testing and gates</a></li></ul><h4>Operate</h4><ul><li><a href="dsh.html">DeepSeek Harness</a></li><li><a href="devnet.html">Local devnet</a></li><li><a href="baseline.html">Public testnet</a></li><li><a href="mcp.html">MCP server</a></li><li><a href="command-reference.html">Command reference</a></li><li><a href="troubleshooting.html">Troubleshooting</a></li><li><a href="faq.html">FAQ</a></li></ul><h4>Understand</h4><ul><li><a href="architecture.html">Architecture</a></li><li><a href="security.html">Security model</a></li><li><a href="gates.html">Canonical gates</a></li><li><a href="evidence.html" aria-current="page">Evidence</a></li></ul><h4>Appendix</h4><ul><li><a href="contributing.html">Contributing</a></li><li><a href="review/non-technical-fitness.html">Non-technical fitness review</a></li></ul></nav>
+    <main>
+      <article class="prose">
+<h1 id="evidence">Evidence<a class="headerlink" href="#evidence" title="Permanent link">#</a></h1>
+<p>The machine-readable P5 records are:</p>
+<ul>
+<li><a href="evidence/p5-devnet.html"><code>evidence/p5-devnet.json</code></a> — the five pinned roots, the
+  hand-authored <code>bookable-service</code> root, and nine suite results.</li>
+<li><a href="evidence/p5-generic-ledger.html"><code>evidence/p5-generic-ledger.json</code></a> — the generic
+  <code>payments-ledger</code> root, its four generated contracts, and the static/smoke checks.</li>
+</ul>
+<p>They contain no keys. The studio renders both records, including suite statuses, with a
+raw-JSON disclosure. <code>evidence/testnet-campaign.template.json</code> is a template, not a record;
+the UI excludes <code>.template.json</code> files from the measured-evidence feed.</p>
+<h2 id="reading-it">Reading it<a class="headerlink" href="#reading-it" title="Permanent link">#</a></h2>
+<ul>
+<li><code>baseline</code> names each app, its pinned commit, root URI, status and step count.</li>
+<li><code>app</code> names the generated app root and status.</li>
+<li><code>suites.results</code> is the same <code>pass</code>/<code>fail</code>/<code>not_run</code> record written to
+  <code>deployments/suite-results.json</code>.</li>
+<li><code>notes</code> records the r-cash core-profile decision and the zero-duplicate adopt run.</li>
+<li>The generic ledger record also lists <code>.rhobuilder-contracts.json</code> and notes that its
+  design arms remain <code>owed</code>; it has no behavioural suite.</li>
+</ul>
+<p>Evidence is not authority. The live check is <code>baseline verify --deep</code>, which re-resolves
+every root at a finalized block. See <a href="testing.html">Testing and gates</a> for status meaning and
+<a href="glossary.html">Glossary</a> for <code>not_run</code>/<code>owed</code>/<code>verified</code>.</p>
+<h2 id="what-is-deliberately-absent">What is deliberately absent<a class="headerlink" href="#what-is-deliberately-absent" title="Permanent link">#</a></h2>
+<ul>
+<li>No public-testnet execution record, because no live campaign has been approved.</li>
+<li>No key material.</li>
+<li>No claim of Rholang refinement; per-app Lean obligations remain <code>owed</code>.</li>
+</ul>
+<h2 id="read-next">Read next<a class="headerlink" href="#read-next" title="Permanent link">#</a></h2>
+<ul>
+<li><a href="baseline.html">Public testnet</a> — why there is no testnet evidence yet.</li>
+<li><a href="devnet.html">Local devnet</a> — how P5 was measured.</li>
+<li><a href="testing.html">Testing and gates</a> — how to reproduce the checks.</li>
+</ul>
+      </article>
+      <nav class="pager" aria-label="Pages"><a class="prev" href="gates.html"><div class="dir">← Previous</div><div class="t">Canonical gates</div></a><a class="next" href="contributing.html"><div class="dir">Next</div><div class="t">Contributing →</div></a></nav>
+      <footer class="footer">Built from rhobuilder <code>3ad31a6</code>.</footer>
+    </main>
+  </div>
+</div>
+<script src="../assets/roles.js"></script>
+<script src="../assets/docs.js"></script>
+</body>
+</html>

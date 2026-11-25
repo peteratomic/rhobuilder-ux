@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Command reference — rhobuilder</title>
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="stylesheet" href="../assets/code.css">
+</head>
+<body data-page="command-reference" data-root="../">
+<div class="doc-shell">
+  <header class="topbar">
+    <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">ρ</span>rhobuilder</a>
+    <nav class="topnav">
+      <a class="hide-sm" href="../index.html">Choose your path</a>
+      <a class="hide-sm" href="../docs/index.html">Manual</a>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="sidebar">Contents</button>
+    </nav>
+  </header>
+  <div class="doc-grid">
+    <nav class="sidebar" id="sidebar" aria-label="Manual"><h4>Front</h4><ul><li><a href="index.html">rhobuilder</a></li><li><a href="install.html">Install</a></li><li><a href="start.html">Quickstart</a></li><li><a href="ui.html">Studio tour</a></li><li><a href="concepts.html">Core concepts</a></li><li><a href="glossary.html">Glossary</a></li></ul><h4>Build loop</h4><ul><li><a href="workflow.html">Workflow</a></li><li><a href="design.html">Design and reuse</a></li><li><a href="scaffold.html">Scaffolding and project status</a></li><li><a href="formal.html">Lean and RhoApp</a></li><li><a href="registry.html">Registry and reuse</a></li><li><a href="testing.html">Testing and gates</a></li></ul><h4>Operate</h4><ul><li><a href="dsh.html">DeepSeek Harness</a></li><li><a href="devnet.html">Local devnet</a></li><li><a href="baseline.html">Public testnet</a></li><li><a href="mcp.html">MCP server</a></li><li><a href="command-reference.html" aria-current="page">Command reference</a></li><li><a href="troubleshooting.html">Troubleshooting</a></li><li><a href="faq.html">FAQ</a></li></ul><h4>Understand</h4><ul><li><a href="architecture.html">Architecture</a></li><li><a href="security.html">Security model</a></li><li><a href="gates.html">Canonical gates</a></li><li><a href="evidence.html">Evidence</a></li></ul><h4>Appendix</h4><ul><li><a href="contributing.html">Contributing</a></li><li><a href="review/non-technical-fitness.html">Non-technical fitness review</a></li></ul></nav>
+    <main>
+      <article class="prose">
+<h1 id="command-reference">Command reference<a class="headerlink" href="#command-reference" title="Permanent link">#</a></h1>
+<p>The <code>rhobuilder</code> binary is the stable JSON surface. The DSH plugin, MCP server, studio and
+launcher all call it; they do not reimplement its decisions.</p>
+<h2 id="global-flags">Global flags<a class="headerlink" href="#global-flags" title="Permanent link">#</a></h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--json</code></td>
+<td>Emit one JSON envelope on stdout; human output never enters it.</td>
+</tr>
+<tr>
+<td><code>--registry &lt;path&gt;</code></td>
+<td>Registry root. Default <code>registry/</code> or <code>RHOBUILDER_REGISTRY</code>.</td>
+</tr>
+<tr>
+<td><code>--templates &lt;path&gt;</code></td>
+<td>Scaffold template root. Default <code>templates/dapp/</code> or <code>RHOBUILDER_TEMPLATES</code>.</td>
+</tr>
+</tbody>
+</table></div>
+<p>Use <code>rhobuilder &lt;group&gt; --help</code> for the authoritative flag list.</p>
+<h2 id="commands">Commands<a class="headerlink" href="#commands" title="Permanent link">#</a></h2>
+<h3 id="version"><code>version</code><a class="headerlink" href="#version" title="Permanent link">#</a></h3>
+<div class="highlight"><pre><span></span><code>rhobuilder<span class="w"> </span>version<span class="w"> </span>--json
+</code></pre></div>
+
+<h3 id="chain"><code>chain</code><a class="headerlink" href="#chain" title="Permanent link">#</a></h3>
+<p>Read-only except the explicitly gated <code>call</code>.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Key flags</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>probe</code></td>
+<td><code>--network</code></td>
+<td>Identity/capabilities probe; no signing or exploratory deploy.</td>
+</tr>
+<tr>
+<td><code>status</code></td>
+<td><code>--network</code></td>
+<td>Raw node status.</td>
+</tr>
+<tr>
+<td><code>deploy-status</code></td>
+<td><code>--network</code>, <code>--deploy-id</code></td>
+<td>Read one deploy by id.</td>
+</tr>
+<tr>
+<td><code>call</code></td>
+<td><code>--network</code>, <code>--keys</code>, <code>--file</code>/<code>--term</code>, <code>--execute</code>, <code>--allow-live</code>, <code>--confirm</code></td>
+<td>Signed term for local suites; CLI-only.</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="registry"><code>registry</code><a class="headerlink" href="#registry" title="Permanent link">#</a></h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Key flags</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>list</code></td>
+<td><code>--network</code>, <code>--owner</code>, <code>--kind</code></td>
+<td>List primitives.</td>
+</tr>
+<tr>
+<td><code>get</code></td>
+<td><code>--id</code></td>
+<td>Show one primitive.</td>
+</tr>
+<tr>
+<td><code>graph</code></td>
+<td><code>--root</code>, <code>--depth</code></td>
+<td>Show the reuse graph around a vertex.</td>
+</tr>
+<tr>
+<td><code>verify</code></td>
+<td><code>--network</code></td>
+<td>Probe identity and check catalog claims.</td>
+</tr>
+<tr>
+<td><code>drift</code></td>
+<td><code>--source-root</code>, <code>--strict</code></td>
+<td>Compare catalog pins with sibling checkouts.</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="design"><code>design</code><a class="headerlink" href="#design" title="Permanent link">#</a></h3>
+<p><code>check</code>, <code>validate</code> (alias) and <code>report</code> accept either <code>--path &lt;design.json&gt;</code> or
+<code>--stdin</code>. Validation is in memory; no file is written.</p>
+<div class="highlight"><pre><span></span><code>rhobuilder<span class="w"> </span>--json<span class="w"> </span>design<span class="w"> </span>check<span class="w"> </span>--path<span class="w"> </span>fixtures/designs/booking.json
+<span class="nb">printf</span><span class="w"> </span><span class="s1">'%s'</span><span class="w"> </span><span class="s2">"</span><span class="k">$(</span>cat<span class="w"> </span>design.json<span class="k">)</span><span class="s2">"</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>rhobuilder<span class="w"> </span>--json<span class="w"> </span>design<span class="w"> </span>validate<span class="w"> </span>--stdin
+</code></pre></div>
+
+<p>A refusal or invalid design exits 2. The envelope includes <code>validation</code>, <code>reuse</code>, <code>owed</code>,
+<code>writes: false</code> and <code>source</code>.</p>
+<h3 id="baseline"><code>baseline</code><a class="headerlink" href="#baseline" title="Permanent link">#</a></h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Key flags</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>plan</code></td>
+<td><code>--network</code>, <code>--apps</code></td>
+<td>Read-only plan plus rendered vendored steps.</td>
+</tr>
+<tr>
+<td><code>preflight</code></td>
+<td><code>--network</code>, <code>--strict</code></td>
+<td>Testnet pins/roots/funding/blockers; no writes.</td>
+</tr>
+<tr>
+<td><code>keygen</code></td>
+<td><code>--network</code>, <code>--out</code>, <code>--force</code></td>
+<td>Generate ops keys; secrets are never printed.</td>
+</tr>
+<tr>
+<td><code>fund</code></td>
+<td><code>--network</code>, <code>--keys</code>, <code>--plan</code>, <code>--execute</code>, <code>--allow-live</code>, <code>--confirm</code></td>
+<td>Devnet validator transfer or testnet faucet plan.</td>
+</tr>
+<tr>
+<td><code>run</code></td>
+<td><code>--network</code>, <code>--keys</code>, <code>--dry-run</code>, <code>--execute</code>, <code>--allow-live</code>, <code>--confirm</code>, <code>--apps</code>, <code>--op-cache</code>, <code>--min-lock-blocks</code></td>
+<td>Install/adopt the all-five graph.</td>
+</tr>
+<tr>
+<td><code>verify</code></td>
+<td><code>--network</code>, <code>--deep</code>, <code>--keys</code>, <code>--allow-live</code>, <code>--confirm</code></td>
+<td>Identity/catalog claims; <code>--deep</code> signs Root reads.</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>preflight</code> is testnet-only. <code>--strict</code> exits 1 while blockers remain.</p>
+<h3 id="formal"><code>formal</code><a class="headerlink" href="#formal" title="Permanent link">#</a></h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Key flags</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>check</code></td>
+<td><code>--project</code>, <code>--strict</code></td>
+<td>Vendor hash, flow obligations, forbidden Lean escapes.</td>
+</tr>
+<tr>
+<td><code>sync</code></td>
+<td><code>--project</code>, <code>--source</code></td>
+<td>Refresh the vendored RhoApp from a checkout.</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>--strict</code> fails on <code>owed</code>.</p>
+<h3 id="deploy"><code>deploy</code><a class="headerlink" href="#deploy" title="Permanent link">#</a></h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Key flags</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>plan</code></td>
+<td><code>--project</code>, <code>--network</code></td>
+<td>Read-only app plan; refuses duplicates, missing dependencies, identity mismatch and mainnet.</td>
+</tr>
+<tr>
+<td><code>execute</code></td>
+<td><code>--project</code>, <code>--network</code>, <code>--plan</code>, <code>--dry-run</code>, <code>--execute</code>, <code>--keys</code>, <code>--allow-live</code>, <code>--confirm</code>, <code>--op-cache</code></td>
+<td>Signed app deploy; CLI-only.</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="project-status"><code>project status</code><a class="headerlink" href="#project-status" title="Permanent link">#</a></h3>
+<div class="highlight"><pre><span></span><code>rhobuilder<span class="w"> </span>--json<span class="w"> </span>project<span class="w"> </span>status<span class="w"> </span>--project<span class="w"> </span>&lt;dir&gt;
+</code></pre></div>
+
+<p>Read-only report over <code>design.json</code>, <code>.rhobuilder.json</code>, <code>.rhobuilder-contracts.json</code>,
+<code>spec/flows</code>, <code>spec/lean</code> and <code>deployments/</code>. It never runs <code>make</code>, Docker or the network.
+Badges are <code>Scaffold</code>, <code>Implemented</code>, <code>Tested</code>, <code>Proved model</code>, <code>Owed</code>, <code>Not run</code>,
+<code>Refused</code> and <code>Draft</code> (saved workspace design).</p>
+<h3 id="check"><code>check</code><a class="headerlink" href="#check" title="Permanent link">#</a></h3>
+<div class="highlight"><pre><span></span><code>rhobuilder<span class="w"> </span>--json<span class="w"> </span>check<span class="w"> </span>--project<span class="w"> </span>&lt;dir&gt;<span class="w"> </span>--profile<span class="w"> </span>static<span class="p">|</span>formal<span class="p">|</span>full
+</code></pre></div>
+
+<p>Runs the generated project’s Makefile gates. Exit 1 on a failed gate, 2 when nothing ran.</p>
+<h3 id="new"><code>new</code><a class="headerlink" href="#new" title="Permanent link">#</a></h3>
+<div class="highlight"><pre><span></span><code>rhobuilder<span class="w"> </span>--json<span class="w"> </span>new<span class="w"> </span>&lt;target&gt;<span class="w"> </span>--design<span class="w"> </span>&lt;design.json&gt;<span class="w"> </span>--template<span class="w"> </span>full<span class="p">|</span>headless<span class="w"> </span>--plan
+rhobuilder<span class="w"> </span>--json<span class="w"> </span>new<span class="w"> </span>&lt;target&gt;<span class="w"> </span>--design<span class="w"> </span>&lt;design.json&gt;<span class="w"> </span>--template<span class="w"> </span>full<span class="p">|</span>headless<span class="w"> </span>--apply
+</code></pre></div>
+
+<p><code>--plan</code> is the default and writes nothing. <code>--apply</code> writes once. <code>--force</code> allows a
+non-empty/outside-workspace target.</p>
+<h2 id="exit-codes">Exit codes<a class="headerlink" href="#exit-codes" title="Permanent link">#</a></h2>
+<p>The CLI documents these broad meanings:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>success</td>
+</tr>
+<tr>
+<td>1</td>
+<td>refusal/drift or a failed project gate</td>
+</tr>
+<tr>
+<td>2</td>
+<td>usage/config/identity, invalid design, or <code>not_run</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td>missing pin or dependency</td>
+</tr>
+<tr>
+<td>4</td>
+<td>node unavailable</td>
+</tr>
+<tr>
+<td>5</td>
+<td>live gate/plan digest missing, or a failed gate</td>
+</tr>
+<tr>
+<td>6</td>
+<td>unsafe key</td>
+</tr>
+</tbody>
+</table></div>
+<p>The mapping is not uniform: <code>design check</code> refuses with 2, <code>registry drift --strict</code> with
+1, and <code>check --profile</code> uses 1 for fail and 2 for not-run. Read the JSON <code>status</code> and
+<code>hint</code> rather than relying on the number alone.</p>
+<h2 id="json-envelope">JSON envelope<a class="headerlink" href="#json-envelope" title="Permanent link">#</a></h2>
+<p>Successful commands return a <code>schema</code> and <code>ok</code>. Errors use:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">"schema"</span><span class="p">:</span><span class="w"> </span><span class="s2">"rhobuilder.error/v1"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"ok"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"kind"</span><span class="p">:</span><span class="w"> </span><span class="s2">"error"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"error"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"IdentityMismatch"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"message"</span><span class="p">:</span><span class="w"> </span><span class="s2">"…"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"status"</span><span class="p">:</span><span class="w"> </span><span class="s2">"identity_mismatch"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"hint"</span><span class="p">:</span><span class="w"> </span><span class="s2">"…"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"field"</span><span class="p">:</span><span class="w"> </span><span class="s2">"network"</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<p>Design refusals use <code>rhobuilder.design-check/v1</code> with <code>ok:false</code> and <code>reuse.conflicts</code>
+instead of the error envelope.</p>
+<h2 id="tool-scripts">Tool scripts<a class="headerlink" href="#tool-scripts" title="Permanent link">#</a></h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>python3 tools/launch_dsh.py [--check|--print-config]</code></td>
+<td>DSH readiness and overlay; <code>web</code>/<code>headless</code> launch.</td>
+</tr>
+<tr>
+<td><code>python3 tools/devnet.py status|start|wait|onboard</code></td>
+<td>Safe local devnet lifecycle.</td>
+</tr>
+<tr>
+<td><code>python3 tools/package_release.py --check --build --self-test</code></td>
+<td>Complete release tarball.</td>
+</tr>
+<tr>
+<td><code>python3 tools/check_registry.py</code></td>
+<td>Registry shape/identity.</td>
+</tr>
+<tr>
+<td><code>python3 tools/vendor_install.py --check</code></td>
+<td>Vendored pinned terms.</td>
+</tr>
+<tr>
+<td><code>python3 tools/gate_sync.py --check</code></td>
+<td>Gates and hashes.</td>
+</tr>
+<tr>
+<td><code>python3 tools/check_docs.py</code></td>
+<td>Docs/README links, anchors and status.</td>
+</tr>
+<tr>
+<td><code>python3 tools/export_skills.py</code></td>
+<td>Skill catalog export.</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="environment">Environment<a class="headerlink" href="#environment" title="Permanent link">#</a></h2>
+<p>See <a href="install.html#environment-variables">Install</a> for the full matrix. The most common are
+<code>RHOBUILDER_REGISTRY</code>, <code>RHOBUILDER_TEMPLATES</code>, <code>RHOBUILDER_BIN</code>, <code>RHOBUILDER_WORKSPACE</code>,
+<code>RHOBUILDER_NODE</code>, <code>RHOBUILDER_CONTAINER</code>, <code>RHOBUILDER_DEVNET</code> and <code>DEEPSEEK_API_KEY</code>.</p>
+<h2 id="live-gates">Live gates<a class="headerlink" href="#live-gates" title="Permanent link">#</a></h2>
+<p><code>--execute</code> on a live network needs <code>--allow-live</code> and a <code>--confirm</code> token binding
+<code>network</code>, <code>networkId</code>, <code>genesis</code> and the plan digest. Mainnet is refused before HTTP.
+See <a href="security.html">Security model</a> and <a href="baseline.html">Public testnet</a>.</p>
+      </article>
+      <nav class="pager" aria-label="Pages"><a class="prev" href="mcp.html"><div class="dir">← Previous</div><div class="t">MCP server</div></a><a class="next" href="troubleshooting.html"><div class="dir">Next</div><div class="t">Troubleshooting →</div></a></nav>
+      <footer class="footer">Built from rhobuilder <code>3ad31a6</code>.</footer>
+    </main>
+  </div>
+</div>
+<script src="../assets/roles.js"></script>
+<script src="../assets/docs.js"></script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MCP server — rhobuilder</title>
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="stylesheet" href="../assets/code.css">
+</head>
+<body data-page="mcp" data-root="../">
+<div class="doc-shell">
+  <header class="topbar">
+    <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">ρ</span>rhobuilder</a>
+    <nav class="topnav">
+      <a class="hide-sm" href="../index.html">Choose your path</a>
+      <a class="hide-sm" href="../docs/index.html">Manual</a>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="sidebar">Contents</button>
+    </nav>
+  </header>
+  <div class="doc-grid">
+    <nav class="sidebar" id="sidebar" aria-label="Manual"><h4>Front</h4><ul><li><a href="index.html">rhobuilder</a></li><li><a href="install.html">Install</a></li><li><a href="start.html">Quickstart</a></li><li><a href="ui.html">Studio tour</a></li><li><a href="concepts.html">Core concepts</a></li><li><a href="glossary.html">Glossary</a></li></ul><h4>Build loop</h4><ul><li><a href="workflow.html">Workflow</a></li><li><a href="design.html">Design and reuse</a></li><li><a href="scaffold.html">Scaffolding and project status</a></li><li><a href="formal.html">Lean and RhoApp</a></li><li><a href="registry.html">Registry and reuse</a></li><li><a href="testing.html">Testing and gates</a></li></ul><h4>Operate</h4><ul><li><a href="dsh.html">DeepSeek Harness</a></li><li><a href="devnet.html">Local devnet</a></li><li><a href="baseline.html">Public testnet</a></li><li><a href="mcp.html" aria-current="page">MCP server</a></li><li><a href="command-reference.html">Command reference</a></li><li><a href="troubleshooting.html">Troubleshooting</a></li><li><a href="faq.html">FAQ</a></li></ul><h4>Understand</h4><ul><li><a href="architecture.html">Architecture</a></li><li><a href="security.html">Security model</a></li><li><a href="gates.html">Canonical gates</a></li><li><a href="evidence.html">Evidence</a></li></ul><h4>Appendix</h4><ul><li><a href="contributing.html">Contributing</a></li><li><a href="review/non-technical-fitness.html">Non-technical fitness review</a></li></ul></nav>
+    <main>
+      <article class="prose">
+<h1 id="mcp-server">MCP server<a class="headerlink" href="#mcp-server" title="Permanent link">#</a></h1>
+<p><code>mcp/server.mjs</code> is a dependency-free, read-only/plan-only MCP server over
+<code>rhobuilder --json</code>. It is optional; the native DSH plugin is the primary surface.</p>
+<div class="highlight"><pre><span></span><code>node<span class="w"> </span>mcp/server.mjs<span class="w"> </span>--binary<span class="w"> </span>/path/to/rhobuilder
+node<span class="w"> </span>mcp/server.mjs<span class="w"> </span>--binary<span class="w"> </span>cargo<span class="w"> </span>run<span class="w"> </span>-q<span class="w"> </span>-p<span class="w"> </span>rhobuilder-cli<span class="w"> </span>--
+</code></pre></div>
+
+<p>Mount it with the DSH launcher:</p>
+<div class="highlight"><pre><span></span><code>python3<span class="w"> </span>tools/launch_dsh.py<span class="w"> </span>--with-mcp<span class="w"> </span>headless
+</code></pre></div>
+
+<p>The launcher inserts an <code>@deepseek-ai/dsh-mcp-client</code> row with <code>serverName: rhobuilder</code>;
+tools appear as <code>mcp__rhobuilder__*</code>.</p>
+<h2 id="tools">Tools<a class="headerlink" href="#tools" title="Permanent link">#</a></h2>
+<ul>
+<li><code>rhobuilder_registry_list</code>, <code>_get</code>, <code>_graph</code>, <code>_drift</code>.</li>
+<li><code>rhobuilder_design_check</code>.</li>
+<li><code>rhobuilder_scaffold_plan</code> (never applies).</li>
+<li><code>rhobuilder_chain_probe</code> (read-only, no exploratory deploy).</li>
+<li><code>rhobuilder_deploy_plan</code> (read-only app plan).</li>
+<li><code>rhobuilder_baseline_plan</code>, <code>rhobuilder_baseline_verify</code> (read-only; no deep signed
+  verification).</li>
+<li><code>rhobuilder_check</code> (runs the project Makefile gates; no chain write).</li>
+<li><code>rhobuilder_formal_check</code>.</li>
+</ul>
+<p>No tool applies a scaffold, signs a deploy, writes a key or mutates the registry. Those
+remain CLI-only. See <a href="security.html">Security model</a> and <a href="architecture.html">Architecture</a>.</p>
+<h2 id="lanes">Lanes<a class="headerlink" href="#lanes" title="Permanent link">#</a></h2>
+<p>Both protocol lanes are implemented and tested:</p>
+<ul>
+<li><code>2025-11-25</code>: <code>initialize</code>, <code>notifications/initialized</code>, <code>ping</code>, <code>tools/list</code>,
+  <code>tools/call</code>.</li>
+<li><code>2026-07-28</code>: handshake-free <code>server/discover</code>, per-request
+  <code>_meta.io.modelcontextprotocol/protocolVersion</code>, and <code>resultType</code> on results.</li>
+</ul>
+<p>stdio is newline-delimited JSON, one JSON document per line. <code>make mcp-test</code> covers both
+lanes and a real bridge call.</p>
+      </article>
+      <nav class="pager" aria-label="Pages"><a class="prev" href="baseline.html"><div class="dir">← Previous</div><div class="t">Public testnet</div></a><a class="next" href="command-reference.html"><div class="dir">Next</div><div class="t">Command reference →</div></a></nav>
+      <footer class="footer">Built from rhobuilder <code>3ad31a6</code>.</footer>
+    </main>
+  </div>
+</div>
+<script src="../assets/roles.js"></script>
+<script src="../assets/docs.js"></script>
+</body>
+</html>

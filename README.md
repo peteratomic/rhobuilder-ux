@@ -20,7 +20,25 @@ git submodule update --init
 git commit -am "Bump rhobuilder to <commit>"
 ```
 
-Test the UX before committing the bump.
+Then rebuild the manual pages (below) and test the UX before committing the bump.
+
+## The site
+
+Open `ux/index.html` in a browser, or serve the `ux/` folder from any static host.
+
+- `ux/index.html`: the "Choose your path" start page
+- `ux/docs/`: the rhobuilder manual as web pages, **generated, don't edit by hand**
+- `ux/assets/`: shared styles, role paths (`roles.js`) and page behaviour
+- `ux/build.py`: generates `ux/docs/` from `vendor/rhobuilder/docs/src`
+
+Rebuild the manual after updating rhobuilder:
+
+```bash
+pip install markdown pygments   # once
+python3 ux/build.py
+```
+
+Every link to a markdown file is turned into a link to its page, so readers never see raw markdown.
 
 ## Layout
 

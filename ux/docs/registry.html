@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Registry and reuse — rhobuilder</title>
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="stylesheet" href="../assets/code.css">
+</head>
+<body data-page="registry" data-root="../">
+<div class="doc-shell">
+  <header class="topbar">
+    <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">ρ</span>rhobuilder</a>
+    <nav class="topnav">
+      <a class="hide-sm" href="../index.html">Choose your path</a>
+      <a class="hide-sm" href="../docs/index.html">Manual</a>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="sidebar">Contents</button>
+    </nav>
+  </header>
+  <div class="doc-grid">
+    <nav class="sidebar" id="sidebar" aria-label="Manual"><h4>Front</h4><ul><li><a href="index.html">rhobuilder</a></li><li><a href="install.html">Install</a></li><li><a href="start.html">Quickstart</a></li><li><a href="ui.html">Studio tour</a></li><li><a href="concepts.html">Core concepts</a></li><li><a href="glossary.html">Glossary</a></li></ul><h4>Build loop</h4><ul><li><a href="workflow.html">Workflow</a></li><li><a href="design.html">Design and reuse</a></li><li><a href="scaffold.html">Scaffolding and project status</a></li><li><a href="formal.html">Lean and RhoApp</a></li><li><a href="registry.html" aria-current="page">Registry and reuse</a></li><li><a href="testing.html">Testing and gates</a></li></ul><h4>Operate</h4><ul><li><a href="dsh.html">DeepSeek Harness</a></li><li><a href="devnet.html">Local devnet</a></li><li><a href="baseline.html">Public testnet</a></li><li><a href="mcp.html">MCP server</a></li><li><a href="command-reference.html">Command reference</a></li><li><a href="troubleshooting.html">Troubleshooting</a></li><li><a href="faq.html">FAQ</a></li></ul><h4>Understand</h4><ul><li><a href="architecture.html">Architecture</a></li><li><a href="security.html">Security model</a></li><li><a href="gates.html">Canonical gates</a></li><li><a href="evidence.html">Evidence</a></li></ul><h4>Appendix</h4><ul><li><a href="contributing.html">Contributing</a></li><li><a href="review/non-technical-fitness.html">Non-technical fitness review</a></li></ul></nav>
+    <main>
+      <article class="prose">
+<h1 id="registry-and-reuse">Registry and reuse<a class="headerlink" href="#registry-and-reuse" title="Permanent link">#</a></h1>
+<p>The registry is the builder’s source of truth for what already exists. It is curated, not
+discovered: rholo has no indexer, and a <code>rho:id</code> lookup proves resolution, not code
+identity.</p>
+<h2 id="protected-domains">Protected domains<a class="headerlink" href="#protected-domains" title="Permanent link">#</a></h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Domain</th>
+<th>Owner</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>accounts, transfers, tokens, FX, stablecoins</td>
+<td>r-cash</td>
+</tr>
+<tr>
+<td>escrow, insurance, syndicates, policies, payouts</td>
+<td>r-sure</td>
+</tr>
+<tr>
+<td>knowledge claims, KAssets, provenance, identity, credentials</td>
+<td>r-gen</td>
+</tr>
+<tr>
+<td>booking, rental capacity, slot allocation</td>
+<td>r-share</td>
+</tr>
+<tr>
+<td>publishing, editions, commissions</td>
+<td>r-print</td>
+</tr>
+<tr>
+<td>cross-chain bridge/relayer</td>
+<td>r-bridge</td>
+</tr>
+<tr>
+<td>governance, external identity/DID</td>
+<td>rgov / BYOID / FreeTrust</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>r-sure.claim</code> (insurance) and <code>r-gen.claim</code> (knowledge) are different. <code>r-share.cover</code> is
+booking-internal, not general insurance. r-gen identity/credential is the on-chain
+primitive; BYOID/FreeTrust are external references.</p>
+<h2 id="modes">Modes<a class="headerlink" href="#modes" title="Permanent link">#</a></h2>
+<ul>
+<li><strong>reuse</strong> — call the registered primitive through an adapter and resolve its component
+  key per arm.</li>
+<li><strong>extend</strong> — adapter-only, or a new-version proposal to the sibling repo. Never edit
+  deployed Rholang.</li>
+<li><strong>new</strong> — a genuinely uncovered capability, with <code>whyUnique</code>, a checked
+  <code>noRegisteredAlternative</code>, and a recorded user override.</li>
+<li><strong>network</strong> — a primitive’s per-network root/status; a <code>candidate</code> or <code>missing</code> root is
+  not a verified dependency.</li>
+</ul>
+<h2 id="pins">Pins<a class="headerlink" href="#pins" title="Permanent link">#</a></h2>
+<ul>
+<li>r-cash <code>49b441d…</code>, rholo <code>841cb84…</code>, node <code>e2d073d…</code>, toolchain 1.95.0.</li>
+<li>r-gen is per-consumer: <code>bcc840c…</code> in r-print, <code>c0ae67d…</code> in r-sure.</li>
+<li>r-share/r-print/r-bridge local HEADs are not configured pins; record
+  <code>TBD-review-required</code> until a maintainer pins them.</li>
+<li>Drift reads <code>git show &lt;rev&gt;:&lt;path&gt;</code>, never a dirty worktree, and fails “pin unavailable”
+  rather than reporting false drift.</li>
+</ul>
+<h2 id="networks">Networks<a class="headerlink" href="#networks" title="Permanent link">#</a></h2>
+<ul>
+<li>Devnet: shard <code>/root</code>.</li>
+<li>Testnet (measured 2026-11-25): <code>https://testnet.rhobot.net</code>, network id
+  <code>testnet-133b1d307b175012</code>, shard <code>/testnet</code>, genesis
+  <code>133b1d307b1750129cf0cfb69c4c8f950da21c4e8db2a6a076464d0ccfd98d44</code> from
+  <code>/api/blocks/0/0</code>, four validators.</li>
+<li>Mainnet: no live rhovision rholo mainnet; the profile is read-only and refuses deploys.</li>
+</ul>
+<h2 id="testnet-baseline">Testnet baseline<a class="headerlink" href="#testnet-baseline" title="Permanent link">#</a></h2>
+<p>The committed r-cash manifest is partial; a newer candidate is unverified. Treat all
+testnet roots as <code>candidate/unverified</code> until a signed Root resolve succeeds. The canonical
+blocker list, pins and approval checkpoints live in <a href="baseline.html">Public testnet</a>; do not
+restate them here.</p>
+<p><code>rhobuilder baseline verify</code> re-resolves every recorded root; a stored manifest is evidence,
+not authority. A testnet reset invalidates it.</p>
+<h2 id="read-budget">Read budget<a class="headerlink" href="#read-budget" title="Permanent link">#</a></h2>
+<p>Public <code>explore-deploy</code> returns HTTP 429 quickly. Identity probes use
+status/capabilities/shards/blocks. Root verification is opt-in, cached and backoff-aware;
+a 429 is <code>not_run</code>, not a pass.</p>
+<h2 id="read-next">Read next<a class="headerlink" href="#read-next" title="Permanent link">#</a></h2>
+<ul>
+<li><a href="design.html">Design and reuse</a> — the gate that consumes this catalog.</li>
+<li><a href="baseline.html">Public testnet</a> — blockers and campaign gates.</li>
+<li><a href="command-reference.html">Command reference</a> — <code>registry list|get|graph|verify|drift</code>.</li>
+</ul>
+      </article>
+      <nav class="pager" aria-label="Pages"><a class="prev" href="formal.html"><div class="dir">← Previous</div><div class="t">Lean and RhoApp</div></a><a class="next" href="testing.html"><div class="dir">Next</div><div class="t">Testing and gates →</div></a></nav>
+      <footer class="footer">Built from rhobuilder <code>3ad31a6</code>.</footer>
+    </main>
+  </div>
+</div>
+<script src="../assets/roles.js"></script>
+<script src="../assets/docs.js"></script>
+</body>
+</html>

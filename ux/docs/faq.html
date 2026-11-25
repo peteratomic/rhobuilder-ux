@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FAQ — rhobuilder</title>
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="stylesheet" href="../assets/code.css">
+</head>
+<body data-page="faq" data-root="../">
+<div class="doc-shell">
+  <header class="topbar">
+    <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">ρ</span>rhobuilder</a>
+    <nav class="topnav">
+      <a class="hide-sm" href="../index.html">Choose your path</a>
+      <a class="hide-sm" href="../docs/index.html">Manual</a>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="sidebar">Contents</button>
+    </nav>
+  </header>
+  <div class="doc-grid">
+    <nav class="sidebar" id="sidebar" aria-label="Manual"><h4>Front</h4><ul><li><a href="index.html">rhobuilder</a></li><li><a href="install.html">Install</a></li><li><a href="start.html">Quickstart</a></li><li><a href="ui.html">Studio tour</a></li><li><a href="concepts.html">Core concepts</a></li><li><a href="glossary.html">Glossary</a></li></ul><h4>Build loop</h4><ul><li><a href="workflow.html">Workflow</a></li><li><a href="design.html">Design and reuse</a></li><li><a href="scaffold.html">Scaffolding and project status</a></li><li><a href="formal.html">Lean and RhoApp</a></li><li><a href="registry.html">Registry and reuse</a></li><li><a href="testing.html">Testing and gates</a></li></ul><h4>Operate</h4><ul><li><a href="dsh.html">DeepSeek Harness</a></li><li><a href="devnet.html">Local devnet</a></li><li><a href="baseline.html">Public testnet</a></li><li><a href="mcp.html">MCP server</a></li><li><a href="command-reference.html">Command reference</a></li><li><a href="troubleshooting.html">Troubleshooting</a></li><li><a href="faq.html" aria-current="page">FAQ</a></li></ul><h4>Understand</h4><ul><li><a href="architecture.html">Architecture</a></li><li><a href="security.html">Security model</a></li><li><a href="gates.html">Canonical gates</a></li><li><a href="evidence.html">Evidence</a></li></ul><h4>Appendix</h4><ul><li><a href="contributing.html">Contributing</a></li><li><a href="review/non-technical-fitness.html">Non-technical fitness review</a></li></ul></nav>
+    <main>
+      <article class="prose">
+<h1 id="faq">FAQ<a class="headerlink" href="#faq" title="Permanent link">#</a></h1>
+<h2 id="is-rhobuilder-production-ready">Is rhobuilder production-ready?<a class="headerlink" href="#is-rhobuilder-production-ready" title="Permanent link">#</a></h2>
+<p>The builder and devnet path are usable and measured. The public-testnet campaign is
+code-complete but live-gated, and there is no live rhovision mainnet. Do not treat it as a
+production deployment service.</p>
+<h2 id="has-the-public-testnet-campaign-run">Has the public testnet campaign run?<a class="headerlink" href="#has-the-public-testnet-campaign-run" title="Permanent link">#</a></h2>
+<p>No signed public-testnet deploy, faucet spend or consolidation has run. The r-cash
+<code>component:account-factory</code> candidate is unverified and r-share/r-print pins are
+<code>TBD-review-required</code>. See <a href="baseline.html">Public testnet</a>.</p>
+<h2 id="what-do-p5-and-p6-mean">What do P5 and P6 mean?<a class="headerlink" href="#what-do-p5-and-p6-mean" title="Permanent link">#</a></h2>
+<p>P5 is the measured local-devnet graph: five primitive roots, a generated app root and nine
+behavioural suites. P6 is the public-testnet baseline: plan, dry-run, executor, keys and
+Root verification implemented, with live execution gated.</p>
+<h2 id="what-is-the-difference-between-owed-not_run-and-proved-model">What is the difference between <code>owed</code>, <code>not_run</code> and <code>proved-model</code>?<a class="headerlink" href="#what-is-the-difference-between-owed-not_run-and-proved-model" title="Permanent link">#</a></h2>
+<ul>
+<li><code>owed</code> — a proof obligation not written yet.</li>
+<li><code>not_run</code> — the check did not execute; it is not a pass.</li>
+<li><code>proved-model</code> — a theorem about the shallow Lean model, never a refinement of deployed
+  Rholang.</li>
+</ul>
+<p>See <a href="glossary.html">Glossary</a> and <a href="testing.html">Testing and gates</a>.</p>
+<h2 id="can-the-studio-sign-fund-or-hold-keys">Can the studio sign, fund or hold keys?<a class="headerlink" href="#can-the-studio-sign-fund-or-hold-keys" title="Permanent link">#</a></h2>
+<p>No. The only UI write is a validated <code>design.json</code>. Keygen, funding, signing, deploy
+execute, baseline execute and deep verification are CLI-only with explicit gates. The
+studio shows status and copyable commands.</p>
+<h2 id="do-i-need-deepseek-harness-or-an-api-key">Do I need DeepSeek Harness or an API key?<a class="headerlink" href="#do-i-need-deepseek-harness-or-an-api-key" title="Permanent link">#</a></h2>
+<p>DSH is the chat/agent shell. The CLI, checks, docs and devnet tool work without an API key.
+Chat needs <code>DEEPSEEK_API_KEY</code>; readiness reports it as <code>setup</code> when absent.</p>
+<h2 id="should-i-use-the-tarball-or-the-source-checkout">Should I use the tarball or the source checkout?<a class="headerlink" href="#should-i-use-the-tarball-or-the-source-checkout" title="Permanent link">#</a></h2>
+<p>Use the tarball for a self-contained binary plus registry/templates/UI/tools. Use the source
+checkout to work on the builder itself or run the full test suite. See <a href="install.html">Install</a>.</p>
+<h2 id="why-was-my-design-refused">Why was my design refused?<a class="headerlink" href="#why-was-my-design-refused" title="Permanent link">#</a></h2>
+<p>Most often it introduces a <code>new</code> component that duplicates a protected commodity primitive
+(accounts, payments, escrow, insurance, booking, provenance, publishing, bridge). Reuse the
+existing primitive through an adapter, or record an explicit approved override with a
+reason. See <a href="design.html">Design and reuse</a>.</p>
+<h2 id="can-i-deploy-to-mainnet">Can I deploy to mainnet?<a class="headerlink" href="#can-i-deploy-to-mainnet" title="Permanent link">#</a></h2>
+<p>No. The mainnet profile exists but refuses deploys before HTTP; there is no live rhovision
+rholo mainnet.</p>
+<h2 id="does-the-ui-need-a-browser-token">Does the UI need a browser token?<a class="headerlink" href="#does-the-ui-need-a-browser-token" title="Permanent link">#</a></h2>
+<p>Yes. The web launch prints a token URL. Custom routes use DSH’s connection admission fence
+and return 401 without the browser cookie. Loopback access only unless explicitly
+configured.</p>
+<h2 id="where-do-i-start">Where do I start?<a class="headerlink" href="#where-do-i-start" title="Permanent link">#</a></h2>
+<ul>
+<li>Non-technical author: <a href="start.html">Quickstart</a> → <a href="ui.html">Studio tour</a>.</li>
+<li>Developer: <a href="workflow.html">Workflow</a> → <a href="command-reference.html">Command reference</a>.</li>
+<li>Operator: <a href="install.html">Install</a> → <a href="devnet.html">Local devnet</a> → <a href="baseline.html">Public testnet</a>.</li>
+<li>Maintainer: <a href="architecture.html">Architecture</a> → <a href="contributing.html">Contributing</a>.</li>
+</ul>
+      </article>
+      <nav class="pager" aria-label="Pages"><a class="prev" href="troubleshooting.html"><div class="dir">← Previous</div><div class="t">Troubleshooting</div></a><a class="next" href="architecture.html"><div class="dir">Next</div><div class="t">Architecture →</div></a></nav>
+      <footer class="footer">Built from rhobuilder <code>3ad31a6</code>.</footer>
+    </main>
+  </div>
+</div>
+<script src="../assets/roles.js"></script>
+<script src="../assets/docs.js"></script>
+</body>
+</html>

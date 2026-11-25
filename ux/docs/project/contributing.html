@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contributing guide — rhobuilder</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<link rel="stylesheet" href="../../assets/code.css">
+</head>
+<body data-page="project/contributing" data-root="../../">
+<div class="doc-shell">
+  <header class="topbar">
+    <a class="brand" href="../../index.html"><span class="brand-mark" aria-hidden="true">ρ</span>rhobuilder</a>
+    <nav class="topnav">
+      <a class="hide-sm" href="../../index.html">Choose your path</a>
+      <a class="hide-sm" href="../../docs/index.html">Manual</a>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="sidebar">Contents</button>
+    </nav>
+  </header>
+  <div class="doc-grid">
+    <nav class="sidebar" id="sidebar" aria-label="Manual"><h4>Front</h4><ul><li><a href="../index.html">rhobuilder</a></li><li><a href="../install.html">Install</a></li><li><a href="../start.html">Quickstart</a></li><li><a href="../ui.html">Studio tour</a></li><li><a href="../concepts.html">Core concepts</a></li><li><a href="../glossary.html">Glossary</a></li></ul><h4>Build loop</h4><ul><li><a href="../workflow.html">Workflow</a></li><li><a href="../design.html">Design and reuse</a></li><li><a href="../scaffold.html">Scaffolding and project status</a></li><li><a href="../formal.html">Lean and RhoApp</a></li><li><a href="../registry.html">Registry and reuse</a></li><li><a href="../testing.html">Testing and gates</a></li></ul><h4>Operate</h4><ul><li><a href="../dsh.html">DeepSeek Harness</a></li><li><a href="../devnet.html">Local devnet</a></li><li><a href="../baseline.html">Public testnet</a></li><li><a href="../mcp.html">MCP server</a></li><li><a href="../command-reference.html">Command reference</a></li><li><a href="../troubleshooting.html">Troubleshooting</a></li><li><a href="../faq.html">FAQ</a></li></ul><h4>Understand</h4><ul><li><a href="../architecture.html">Architecture</a></li><li><a href="../security.html">Security model</a></li><li><a href="../gates.html">Canonical gates</a></li><li><a href="../evidence.html">Evidence</a></li></ul><h4>Appendix</h4><ul><li><a href="../contributing.html">Contributing</a></li><li><a href="../review/non-technical-fitness.html">Non-technical fitness review</a></li></ul></nav>
+    <main>
+      <article class="prose">
+<h1 id="contributing">Contributing<a class="headerlink" href="#contributing" title="Permanent link">#</a></h1>
+<p>Work on <code>main</code>; do not branch or push without the maintainer asking.</p>
+<h2 id="before-a-change">Before a change<a class="headerlink" href="#before-a-change" title="Permanent link">#</a></h2>
+<div class="highlight"><pre><span></span><code>cargo<span class="w"> </span>fmt<span class="w"> </span>--all<span class="w"> </span>--<span class="w"> </span>--check
+cargo<span class="w"> </span>clippy<span class="w"> </span>--workspace<span class="w"> </span>--all-targets<span class="w"> </span>--<span class="w"> </span>-D<span class="w"> </span>warnings
+cargo<span class="w"> </span><span class="nb">test</span><span class="w"> </span>--workspace
+node<span class="w"> </span>--test<span class="w"> </span>agents/deepseek/plugin/test/*.test.mjs
+node<span class="w"> </span>--test<span class="w"> </span>mcp/test/*.test.mjs
+python3<span class="w"> </span>-m<span class="w"> </span>unittest<span class="w"> </span>discover<span class="w"> </span>-s<span class="w"> </span>tools/tests<span class="w"> </span>-v
+python3<span class="w"> </span>tools/vendor_install.py<span class="w"> </span>--check
+make<span class="w"> </span>check
+</code></pre></div>
+
+<h2 id="invariants">Invariants<a class="headerlink" href="#invariants" title="Permanent link">#</a></h2>
+<ul>
+<li>The Rust CLI is the decision boundary. The DSH plugin and MCP server only validate and
+  forward; they never scrape human output or sign.</li>
+<li>Vendored sibling terms are pinned by commit and hash. Change a plan only with a new pin
+  and a regenerated <code>ORIGIN.json</code>.</li>
+<li>Do not modify a sibling repository. Read pinned blobs with <code>git show</code>.</li>
+<li>Keep <code>owed</code> first-class. Never describe a shallow Lean model as a Rholang refinement.</li>
+<li>No secret in a fixture, log, JSON envelope, commit or test output.</li>
+<li>Live testnet actions are gated. A test that would sign against testnet must use a mock
+  transport or an explicit <code>not_run</code>.</li>
+</ul>
+<h2 id="commit-identity">Commit identity<a class="headerlink" href="#commit-identity" title="Permanent link">#</a></h2>
+<p>Use <code>patrickmockridge &lt;patrickmockridge@gmail.com&gt;</code>.</p>
+      </article>
+      <nav class="pager" aria-label="Pages"></nav>
+      <footer class="footer">Built from rhobuilder <code>3ad31a6</code>.</footer>
+    </main>
+  </div>
+</div>
+<script src="../../assets/roles.js"></script>
+<script src="../../assets/docs.js"></script>
+</body>
+</html>

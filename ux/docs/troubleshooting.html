@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Troubleshooting — rhobuilder</title>
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="stylesheet" href="../assets/code.css">
+</head>
+<body data-page="troubleshooting" data-root="../">
+<div class="doc-shell">
+  <header class="topbar">
+    <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">ρ</span>rhobuilder</a>
+    <nav class="topnav">
+      <a class="hide-sm" href="../index.html">Choose your path</a>
+      <a class="hide-sm" href="../docs/index.html">Manual</a>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="sidebar">Contents</button>
+    </nav>
+  </header>
+  <div class="doc-grid">
+    <nav class="sidebar" id="sidebar" aria-label="Manual"><h4>Front</h4><ul><li><a href="index.html">rhobuilder</a></li><li><a href="install.html">Install</a></li><li><a href="start.html">Quickstart</a></li><li><a href="ui.html">Studio tour</a></li><li><a href="concepts.html">Core concepts</a></li><li><a href="glossary.html">Glossary</a></li></ul><h4>Build loop</h4><ul><li><a href="workflow.html">Workflow</a></li><li><a href="design.html">Design and reuse</a></li><li><a href="scaffold.html">Scaffolding and project status</a></li><li><a href="formal.html">Lean and RhoApp</a></li><li><a href="registry.html">Registry and reuse</a></li><li><a href="testing.html">Testing and gates</a></li></ul><h4>Operate</h4><ul><li><a href="dsh.html">DeepSeek Harness</a></li><li><a href="devnet.html">Local devnet</a></li><li><a href="baseline.html">Public testnet</a></li><li><a href="mcp.html">MCP server</a></li><li><a href="command-reference.html">Command reference</a></li><li><a href="troubleshooting.html" aria-current="page">Troubleshooting</a></li><li><a href="faq.html">FAQ</a></li></ul><h4>Understand</h4><ul><li><a href="architecture.html">Architecture</a></li><li><a href="security.html">Security model</a></li><li><a href="gates.html">Canonical gates</a></li><li><a href="evidence.html">Evidence</a></li></ul><h4>Appendix</h4><ul><li><a href="contributing.html">Contributing</a></li><li><a href="review/non-technical-fitness.html">Non-technical fitness review</a></li></ul></nav>
+    <main>
+      <article class="prose">
+<h1 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">#</a></h1>
+<p>Start with the read-only checks:</p>
+<div class="highlight"><pre><span></span><code>python3<span class="w"> </span>tools/launch_dsh.py<span class="w"> </span>--check<span class="w"> </span>--json
+python3<span class="w"> </span>tools/devnet.py<span class="w"> </span>status<span class="w"> </span>--json
+./target/debug/rhobuilder<span class="w"> </span>--json<span class="w"> </span>project<span class="w"> </span>status<span class="w"> </span>--project<span class="w"> </span>&lt;dir&gt;
+</code></pre></div>
+
+<p><code>setup</code> means a prerequisite is missing, not that the command passed. <code>not_run</code> means the
+check did not execute.</p>
+<h2 id="readiness-and-environment">Readiness and environment<a class="headerlink" href="#readiness-and-environment" title="Permanent link">#</a></h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>setupRequired</code> contains <code>api-key</code></td>
+<td><code>DEEPSEEK_API_KEY</code> is unset. Chat cannot answer.</td>
+<td>Export it or save it in DSH Settings → Models. Read-only checks still work.</td>
+</tr>
+<tr>
+<td><code>setupRequired</code> contains <code>devnet</code></td>
+<td>Docker/container/node is missing, stopped or unhealthy.</td>
+<td><code>python3 tools/devnet.py status --json</code>; then <code>start</code>/<code>wait</code> or recover the container manually.</td>
+</tr>
+<tr>
+<td><code>setupRequired</code> contains <code>lake</code></td>
+<td>Lean is not installed.</td>
+<td>Install Lean/lake; formal checks report <code>not_run</code> without it.</td>
+</tr>
+<tr>
+<td><code>warn</code> for <code>mdbook</code></td>
+<td>Docs cannot build.</td>
+<td>Install mdBook; it is not needed for the studio or CLI.</td>
+</tr>
+<tr>
+<td><code>npx</code> warning</td>
+<td>DSH will be fetched on first launch.</td>
+<td>Needs network; install DSH locally to avoid the fetch.</td>
+</tr>
+<tr>
+<td>Node/DSH version mismatch</td>
+<td>DSH 0.2.3-alpha.2 needs Node 24.22.3+; 0.2.2-rc.5 uses Node 22.</td>
+<td>Use the matching Node, or pin DSH 0.2.2-rc.5.</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="devnet">Devnet<a class="headerlink" href="#devnet" title="Permanent link">#</a></h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Node unreachable</td>
+<td>Container stopped or endpoint wrong.</td>
+<td><code>devnet.py start</code>, or set <code>RHOBUILDER_NODE</code> to the remote node.</td>
+</tr>
+<tr>
+<td><code>degraded: critical</code></td>
+<td>Resource latch/throttle.</td>
+<td><code>devnet.py wait</code>; the tool never restarts automatically. Recover the container deliberately.</td>
+</tr>
+<tr>
+<td>Container missing</td>
+<td>It was never created, or the name differs.</td>
+<td>Create it from your RNodeRust checkout; <code>devnet.py</code> will not create or reset it.</td>
+</tr>
+<tr>
+<td><code>onboard --execute</code> refuses</td>
+<td>Container missing or node not healthy.</td>
+<td>Fix the node; onboarding is devnet-only and stops on the first failure.</td>
+</tr>
+<tr>
+<td>HTTP 429 from testnet</td>
+<td>Public read budget.</td>
+<td>Wait/retry; a 429 is <code>not_run</code>, never a pass.</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="design-scaffold-and-tests">Design, scaffold and tests<a class="headerlink" href="#design-scaffold-and-tests" title="Permanent link">#</a></h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>design check</code> refuses</td>
+<td>Duplicate commodity, missing alternatives, bad acceptance, invalid override.</td>
+<td>Read <code>reuse.conflicts</code>/<code>validation.checks</code>; reuse the primitive or record an approved override.</td>
+</tr>
+<tr>
+<td>Scaffold refused</td>
+<td>The design gate did not pass.</td>
+<td>Fix the design first; <code>--apply</code> never bypasses the gate.</td>
+</tr>
+<tr>
+<td><code>project status</code> shows <code>Owed</code></td>
+<td>Mutating arms lack a Lean obligation.</td>
+<td>Add the model/theorem or keep <code>owed</code> honestly.</td>
+</tr>
+<tr>
+<td><code>project status</code> shows <code>Not run</code></td>
+<td>No recorded suite, no lake, or devnet off.</td>
+<td>Run the relevant gate/suite; do not treat it as pass.</td>
+</tr>
+<tr>
+<td>Generated suite says <code>not_run</code></td>
+<td>Devnet unreachable or <code>RHOBUILDER_DEVNET</code> unset.</td>
+<td>Start the devnet and export <code>RHOBUILDER_DEVNET=1</code>; check <code>run_suites.py</code> first.</td>
+</tr>
+<tr>
+<td><code>formal check</code> fails on generated scaffold</td>
+<td>Generic arms are <code>owed</code> and <code>--strict</code> rejects that.</td>
+<td>Expected by design; the <code>bookable-service</code> example is the reference strict pass.</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="keys-and-live-gates">Keys and live gates<a class="headerlink" href="#keys-and-live-gates" title="Permanent link">#</a></h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Exit 6 / <code>unsafe_key</code></td>
+<td>Key path outside the allowed location, wrong mode, or a devnet key used live.</td>
+<td>Use a mode-0600 key under the project/installation; never paste a key into chat.</td>
+</tr>
+<tr>
+<td>Exit 5 on <code>--execute</code></td>
+<td>Missing <code>--allow-live</code>, funded key or confirmation token.</td>
+<td>Run the dry-run, get approval, then pass the exact token.</td>
+</tr>
+<tr>
+<td>Testnet preflight has blockers</td>
+<td>r-cash account-factory unverified, missing roots, TBD pins.</td>
+<td>Resolve pins/candidates; do not execute a partial campaign.</td>
+</tr>
+<tr>
+<td>Mainnet refused</td>
+<td>No live rhovision mainnet.</td>
+<td>Read-only profile only.</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="docs-and-ui">Docs and UI<a class="headerlink" href="#docs-and-ui" title="Permanent link">#</a></h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>docs-check</code> reports unlisted page</td>
+<td>New <code>.md</code> not in <code>SUMMARY.md</code>.</td>
+<td>Add it under the right part.</td>
+</tr>
+<tr>
+<td><code>docs-check</code> reports broken link/anchor</td>
+<td>Renamed heading or path.</td>
+<td>Fix the link; anchors use heading slugs.</td>
+</tr>
+<tr>
+<td><code>docs-check</code> reports duplicate status</td>
+<td>A second <code>Area | Status</code> table.</td>
+<td>Keep the table only in <code>docs/src/index.md</code>.</td>
+</tr>
+<tr>
+<td>HMR <code>EMFILE: too many open files</code></td>
+<td>Host inotify instance limit.</td>
+<td>The web server can still serve; increase the host limit or disable/reduce watchers.</td>
+</tr>
+<tr>
+<td>Studio shows <code>Not checked</code></td>
+<td>The CLI/design gate could not run.</td>
+<td>Check readiness and the CLI path; this is not a design refusal.</td>
+</tr>
+<tr>
+<td>Composer save 409</td>
+<td><code>design.json</code> already exists.</td>
+<td>Confirm overwrite explicitly.</td>
+</tr>
+<tr>
+<td>Composer save 400</td>
+<td>Absolute/<code>..</code>/symlink path, or missing <code>.rhobuilder.json</code>.</td>
+<td>Use <code>designs/&lt;slug&gt;.json</code> or an existing project under the workspace.</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="docs-and-release">Docs and release<a class="headerlink" href="#docs-and-release" title="Permanent link">#</a></h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Package check rejects machine-local paths</td>
+<td><code>/home/&lt;user&gt;</code> leaked into a text file.</td>
+<td>Use <code>$HOME</code>, <code>--source-root</code> or relative paths.</td>
+</tr>
+<tr>
+<td>Package self-test fails</td>
+<td>Missing tool/registry/template, or launcher overlay invalid.</td>
+<td>Run the failing command from the extracted tarball; check <code>tools/package_release.py</code>.</td>
+</tr>
+<tr>
+<td><code>mdbook build</code> fails</td>
+<td>New page not in SUMMARY or invalid markdown.</td>
+<td>Fix <code>SUMMARY.md</code>/the page, then rerun <code>make docs-check</code>.</td>
+</tr>
+</tbody>
+</table></div>
+<p>See <a href="command-reference.html">Command reference</a> for flags and <a href="security.html">Security model</a>
+for the boundaries behind these failures.</p>
+      </article>
+      <nav class="pager" aria-label="Pages"><a class="prev" href="command-reference.html"><div class="dir">← Previous</div><div class="t">Command reference</div></a><a class="next" href="faq.html"><div class="dir">Next</div><div class="t">FAQ →</div></a></nav>
+      <footer class="footer">Built from rhobuilder <code>3ad31a6</code>.</footer>
+    </main>
+  </div>
+</div>
+<script src="../assets/roles.js"></script>
+<script src="../assets/docs.js"></script>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Install — rhobuilder</title>
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="stylesheet" href="../assets/code.css">
+</head>
+<body data-page="install" data-root="../">
+<div class="doc-shell">
+  <header class="topbar">
+    <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">ρ</span>rhobuilder</a>
+    <nav class="topnav">
+      <a class="hide-sm" href="../index.html">Choose your path</a>
+      <a class="hide-sm" href="../docs/index.html">Manual</a>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="sidebar">Contents</button>
+    </nav>
+  </header>
+  <div class="doc-grid">
+    <nav class="sidebar" id="sidebar" aria-label="Manual"><h4>Front</h4><ul><li><a href="index.html">rhobuilder</a></li><li><a href="install.html" aria-current="page">Install</a></li><li><a href="start.html">Quickstart</a></li><li><a href="ui.html">Studio tour</a></li><li><a href="concepts.html">Core concepts</a></li><li><a href="glossary.html">Glossary</a></li></ul><h4>Build loop</h4><ul><li><a href="workflow.html">Workflow</a></li><li><a href="design.html">Design and reuse</a></li><li><a href="scaffold.html">Scaffolding and project status</a></li><li><a href="formal.html">Lean and RhoApp</a></li><li><a href="registry.html">Registry and reuse</a></li><li><a href="testing.html">Testing and gates</a></li></ul><h4>Operate</h4><ul><li><a href="dsh.html">DeepSeek Harness</a></li><li><a href="devnet.html">Local devnet</a></li><li><a href="baseline.html">Public testnet</a></li><li><a href="mcp.html">MCP server</a></li><li><a href="command-reference.html">Command reference</a></li><li><a href="troubleshooting.html">Troubleshooting</a></li><li><a href="faq.html">FAQ</a></li></ul><h4>Understand</h4><ul><li><a href="architecture.html">Architecture</a></li><li><a href="security.html">Security model</a></li><li><a href="gates.html">Canonical gates</a></li><li><a href="evidence.html">Evidence</a></li></ul><h4>Appendix</h4><ul><li><a href="contributing.html">Contributing</a></li><li><a href="review/non-technical-fitness.html">Non-technical fitness review</a></li></ul></nav>
+    <main>
+      <article class="prose">
+<h1 id="install">Install<a class="headerlink" href="#install" title="Permanent link">#</a></h1>
+<p><code>rhobuilder</code> runs as a Rust CLI, a DeepSeek Harness (DSH) web/headless profile, and a
+read-only MCP server. You can use the complete release tarball or work from a source
+checkout.</p>
+<h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">#</a></h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Need</th>
+<th>Version / notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Node</td>
+<td>22.x for DSH 0.2.2-rc.5. DSH 0.2.3-alpha.2 needs Node 24.22.3 or later.</td>
+</tr>
+<tr>
+<td>Rust</td>
+<td>1.95.0; the repository pins it in <code>rust-toolchain.toml</code>.</td>
+</tr>
+<tr>
+<td>Python</td>
+<td>3.11+ for the launcher (<code>tomllib</code>), devnet tool, checkers and release packager.</td>
+</tr>
+<tr>
+<td>Docker</td>
+<td>Only for local devnet execution and onboarding.</td>
+</tr>
+<tr>
+<td>Lean / <code>lake</code></td>
+<td>Only for formal checks; <code>make formal-check</code> reports <code>not_run</code> without it.</td>
+</tr>
+<tr>
+<td>mdBook</td>
+<td>Only to build this book.</td>
+</tr>
+<tr>
+<td>git + network</td>
+<td>The first source build fetches the pinned <code>rcash-sdk</code> git dependency.</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="check-first">Check first<a class="headerlink" href="#check-first" title="Permanent link">#</a></h2>
+<div class="highlight"><pre><span></span><code>python3<span class="w"> </span>tools/launch_dsh.py<span class="w"> </span>--check<span class="w"> </span>--json
+</code></pre></div>
+
+<p>Read <code>setupRequired</code> and each <code>hint</code>. A <code>setup</code> item is not a pass. <code>--check</code> is
+read-only; it does not start the devnet or change the workspace.</p>
+<p>Typical results:</p>
+<ul>
+<li><code>ok</code> — Node, DSH, CLI, plugin, UI, registry and templates.</li>
+<li><code>warn</code> — npx/network fetch, source-build fallback, missing mdBook.</li>
+<li><code>setup</code> — API key, Docker/devnet, Lean/lake, unexported skills.</li>
+</ul>
+<p>See <a href="troubleshooting.html">Troubleshooting</a> for each setup item.</p>
+<h2 id="source-checkout">Source checkout<a class="headerlink" href="#source-checkout" title="Permanent link">#</a></h2>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/rhovision-org/rhobuilder
+<span class="nb">cd</span><span class="w"> </span>rhobuilder
+cargo<span class="w"> </span>build<span class="w"> </span>-p<span class="w"> </span>rhobuilder-cli
+./target/debug/rhobuilder<span class="w"> </span>version<span class="w"> </span>--json
+python3<span class="w"> </span>tools/launch_dsh.py<span class="w"> </span>--check<span class="w"> </span>--json
+</code></pre></div>
+
+<p>A source build is the fastest way to work on the builder itself. The CLI defaults to
+<code>registry/</code> and <code>templates/dapp/</code> in the current checkout.</p>
+<h2 id="complete-release-tarball">Complete release tarball<a class="headerlink" href="#complete-release-tarball" title="Permanent link">#</a></h2>
+<p>Build and self-test the package:</p>
+<div class="highlight"><pre><span></span><code>cargo<span class="w"> </span>build<span class="w"> </span>--release<span class="w"> </span>-p<span class="w"> </span>rhobuilder-cli
+python3<span class="w"> </span>tools/package_release.py<span class="w"> </span>--check<span class="w"> </span>--build<span class="w"> </span>--self-test<span class="w"> </span>--json
+</code></pre></div>
+
+<p>The artifact is <code>dist/rhobuilder-&lt;version&gt;-linux-&lt;arch&gt;.tar.gz</code> plus a <code>.sha256</code> file. It
+contains the binary, <code>launch-rhobuilder.sh</code>, registry, templates, formal library,
+DSH plugin/UI, skills, tools, MCP server, gates, fixtures and docs.</p>
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>dist
+sha256sum<span class="w"> </span>-c<span class="w"> </span>rhobuilder-0.1.0-linux-x86_64.tar.gz.sha256
+tar<span class="w"> </span>xzf<span class="w"> </span>rhobuilder-0.1.0-linux-x86_64.tar.gz
+<span class="nb">cd</span><span class="w"> </span>rhobuilder-0.1.0-linux-x86_64
+./bin/rhobuilder<span class="w"> </span>version<span class="w"> </span>--json
+./launch-rhobuilder.sh<span class="w"> </span>--check<span class="w"> </span>--json
+</code></pre></div>
+
+<p>The packaged launcher is the top-level <code>launch-rhobuilder.sh</code>, not the source
+<code>tools/launch_dsh.py</code>. It sets <code>RHOBUILDER_REGISTRY</code> and <code>RHOBUILDER_TEMPLATES</code> to the
+package contents before starting the launcher.</p>
+<h2 id="environment-variables">Environment variables<a class="headerlink" href="#environment-variables" title="Permanent link">#</a></h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>RHOBUILDER_REGISTRY</code></td>
+<td>Registry root; default <code>registry/</code> or the package registry.</td>
+</tr>
+<tr>
+<td><code>RHOBUILDER_TEMPLATES</code></td>
+<td>Scaffold template root; default <code>templates/dapp/</code>.</td>
+</tr>
+<tr>
+<td><code>RHOBUILDER_BIN</code></td>
+<td>CLI path used by <code>tools/devnet.py</code>.</td>
+</tr>
+<tr>
+<td><code>RHOBUILDER_WORKSPACE</code></td>
+<td>Root for composer saves and <code>designs/</code>; default installation root.</td>
+</tr>
+<tr>
+<td><code>RHOBUILDER_NODE</code></td>
+<td>Devnet endpoint; default <code>http://localhost:40403</code>.</td>
+</tr>
+<tr>
+<td><code>RHOBUILDER_CONTAINER</code></td>
+<td>Devnet container; default <code>devnet-bootstrap</code>.</td>
+</tr>
+<tr>
+<td><code>RHOBUILDER_DEVNET</code></td>
+<td>Set to <code>1</code> for generated-project devnet suites.</td>
+</tr>
+<tr>
+<td><code>DEEPSEEK_API_KEY</code></td>
+<td>DSH chat credential; not needed for read-only checks or docs.</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="upgrade-and-uninstall">Upgrade and uninstall<a class="headerlink" href="#upgrade-and-uninstall" title="Permanent link">#</a></h2>
+<ul>
+<li>Tarball: extract the new version into a new directory and point your shell wrapper at it.
+  Keep <code>.ops/</code> and any project directories; they are not part of the package.</li>
+<li>Source: <code>git pull</code>, rebuild, and rerun <code>python3 tools/package_release.py --check</code>.</li>
+<li>The launcher and CLI do not write outside the checkout/package except for the workspace
+  designs, <code>.dsh/</code>, <code>.ops/</code> and the directories you explicitly pass to scaffold/deploy.</li>
+</ul>
+<h2 id="next">Next<a class="headerlink" href="#next" title="Permanent link">#</a></h2>
+<ul>
+<li><a href="start.html">Quickstart</a> — first design, validation and scaffold plan.</li>
+<li><a href="dsh.html">DeepSeek Harness</a> — launcher, plugin and presets.</li>
+<li><a href="command-reference.html">Command reference</a> — every command and flag.</li>
+</ul>
+      </article>
+      <nav class="pager" aria-label="Pages"><a class="prev" href="index.html"><div class="dir">← Previous</div><div class="t">rhobuilder</div></a><a class="next" href="start.html"><div class="dir">Next</div><div class="t">Quickstart →</div></a></nav>
+      <footer class="footer">Built from rhobuilder <code>3ad31a6</code>.</footer>
+    </main>
+  </div>
+</div>
+<script src="../assets/roles.js"></script>
+<script src="../assets/docs.js"></script>
+</body>
+</html>

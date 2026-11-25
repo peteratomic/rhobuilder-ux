@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Testing and gates — rhobuilder</title>
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="stylesheet" href="../assets/code.css">
+</head>
+<body data-page="testing" data-root="../">
+<div class="doc-shell">
+  <header class="topbar">
+    <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">ρ</span>rhobuilder</a>
+    <nav class="topnav">
+      <a class="hide-sm" href="../index.html">Choose your path</a>
+      <a class="hide-sm" href="../docs/index.html">Manual</a>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="sidebar">Contents</button>
+    </nav>
+  </header>
+  <div class="doc-grid">
+    <nav class="sidebar" id="sidebar" aria-label="Manual"><h4>Front</h4><ul><li><a href="index.html">rhobuilder</a></li><li><a href="install.html">Install</a></li><li><a href="start.html">Quickstart</a></li><li><a href="ui.html">Studio tour</a></li><li><a href="concepts.html">Core concepts</a></li><li><a href="glossary.html">Glossary</a></li></ul><h4>Build loop</h4><ul><li><a href="workflow.html">Workflow</a></li><li><a href="design.html">Design and reuse</a></li><li><a href="scaffold.html">Scaffolding and project status</a></li><li><a href="formal.html">Lean and RhoApp</a></li><li><a href="registry.html">Registry and reuse</a></li><li><a href="testing.html" aria-current="page">Testing and gates</a></li></ul><h4>Operate</h4><ul><li><a href="dsh.html">DeepSeek Harness</a></li><li><a href="devnet.html">Local devnet</a></li><li><a href="baseline.html">Public testnet</a></li><li><a href="mcp.html">MCP server</a></li><li><a href="command-reference.html">Command reference</a></li><li><a href="troubleshooting.html">Troubleshooting</a></li><li><a href="faq.html">FAQ</a></li></ul><h4>Understand</h4><ul><li><a href="architecture.html">Architecture</a></li><li><a href="security.html">Security model</a></li><li><a href="gates.html">Canonical gates</a></li><li><a href="evidence.html">Evidence</a></li></ul><h4>Appendix</h4><ul><li><a href="contributing.html">Contributing</a></li><li><a href="review/non-technical-fitness.html">Non-technical fitness review</a></li></ul></nav>
+    <main>
+      <article class="prose">
+<h1 id="testing-and-gates">Testing and gates<a class="headerlink" href="#testing-and-gates" title="Permanent link">#</a></h1>
+<p>There is one gate implementation per check. The builder does not reimplement a gate that
+the generated project also runs.</p>
+<h2 id="test-layers">Test layers<a class="headerlink" href="#test-layers" title="Permanent link">#</a></h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Command</th>
+<th>What it proves</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Rust</td>
+<td><code>cargo test --workspace</code></td>
+<td>core, registry, chain, formal, gates and CLI behavior</td>
+</tr>
+<tr>
+<td>Plugin</td>
+<td><code>node --test agents/deepseek/plugin/test/*.test.mjs</code></td>
+<td>argv mapping, JSON envelopes, renderers and prose errors</td>
+</tr>
+<tr>
+<td>Studio UI</td>
+<td><code>make ui-test</code></td>
+<td>host routes, save containment, slots and vm-rendered components</td>
+</tr>
+<tr>
+<td>Launcher/tools</td>
+<td><code>make launcher-test</code></td>
+<td>overlay, readiness, devnet tool and docs checker</td>
+</tr>
+<tr>
+<td>Docs</td>
+<td><code>make docs-check</code></td>
+<td>mdBook build, SUMMARY coverage, links, anchors and canonical status</td>
+</tr>
+<tr>
+<td>Scaffold</td>
+<td><code>make scaffold-e2e</code></td>
+<td>generated project static gates, cargo check and formal check</td>
+</tr>
+<tr>
+<td>Formal</td>
+<td><code>make formal-check</code></td>
+<td>shared RhoApp builds; exit 2 when <code>lake</code> is absent</td>
+</tr>
+<tr>
+<td>Registry</td>
+<td><code>make registry-check</code></td>
+<td>catalog shape and measured network identity</td>
+</tr>
+<tr>
+<td>Vendoring</td>
+<td><code>make vendor-install-check</code></td>
+<td>pinned vendored terms and hashes</td>
+</tr>
+<tr>
+<td>Gates</td>
+<td><code>make gates-check</code></td>
+<td>canonical checkers and vendored copies match</td>
+</tr>
+<tr>
+<td>Package</td>
+<td><code>make package-check</code></td>
+<td>complete release layout and self-test</td>
+</tr>
+<tr>
+<td>MCP</td>
+<td><code>make mcp-test</code></td>
+<td>both protocol lanes and a real bridge call</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>make check</code> runs the developer/CI set; it does not require a live devnet or Lean.</p>
+<h2 id="generated-project-profiles">Generated project profiles<a class="headerlink" href="#generated-project-profiles" title="Permanent link">#</a></h2>
+<p><code>rhobuilder check --project &lt;dir&gt; --profile ...</code> runs the project’s own Makefile targets:</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Profile</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>static</code></td>
+<td><code>make check</code>: spec, graph, flows, docs</td>
+</tr>
+<tr>
+<td><code>formal</code></td>
+<td><code>make formal-check</code>: Lean, vendored hash, per-arm obligations</td>
+</tr>
+<tr>
+<td><code>full</code></td>
+<td>static + formal + <code>make unit-all</code> (devnet harness; <code>not_run</code> when off)</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>parse-check</code> is separate because it needs the pinned node parser. <code>static</code> does not claim
+it ran.</p>
+<h2 id="not-run-is-a-result">Not run is a result<a class="headerlink" href="#not-run-is-a-result" title="Permanent link">#</a></h2>
+<p>A suite or gate can return <code>not_run</code> when the node is absent, throttled or degraded, or
+when <code>lake</code>/Docker is missing. It is never converted to a pass. <code>make unit-all</code> and the
+generated <code>run_suites.py</code> check node health first.</p>
+<p><code>deployments/suite-results.json</code> records <code>pass</code>, <code>fail</code> or <code>not_run</code>. The P5 records in
+<a href="evidence.html">Evidence</a> are the measured examples.</p>
+<h2 id="what-the-statuses-mean">What the statuses mean<a class="headerlink" href="#what-the-statuses-mean" title="Permanent link">#</a></h2>
+<ul>
+<li><strong>Tested</strong> — recorded suites pass.</li>
+<li><strong>Not run</strong> — the check did not execute; inspect the reason.</li>
+<li><strong>Proved model</strong> — a shallow Lean theorem; never call it Rholang <code>verified</code>.</li>
+<li><strong>Owed</strong> — a proof obligation is still missing.</li>
+</ul>
+<p>See <a href="glossary.html">Glossary</a> for the vocabulary and <a href="command-reference.html">Command reference</a>
+for flags and exit codes.</p>
+<h2 id="ci">CI<a class="headerlink" href="#ci" title="Permanent link">#</a></h2>
+<p><code>.github/workflows/ci.yml</code> has jobs for Rust, plugin/UI, launcher, Lean, scaffold, package
+and docs. A release package is built and self-tested on every run. The docs job runs
+<code>mdbook build</code> and <code>tools/check_docs.py</code>; the checker rejects unlisted pages, broken links,
+bad anchors and a second status table.</p>
+<h2 id="evidence-is-not-authority">Evidence is not authority<a class="headerlink" href="#evidence-is-not-authority" title="Permanent link">#</a></h2>
+<p>A stored manifest or suite record is evidence of what ran. The live authority is a signed
+Root resolve (<code>baseline verify --deep</code>) and the finalized chain. Testnet resets invalidate
+prior roots.</p>
+      </article>
+      <nav class="pager" aria-label="Pages"><a class="prev" href="registry.html"><div class="dir">← Previous</div><div class="t">Registry and reuse</div></a><a class="next" href="dsh.html"><div class="dir">Next</div><div class="t">DeepSeek Harness →</div></a></nav>
+      <footer class="footer">Built from rhobuilder <code>3ad31a6</code>.</footer>
+    </main>
+  </div>
+</div>
+<script src="../assets/roles.js"></script>
+<script src="../assets/docs.js"></script>
+</body>
+</html>

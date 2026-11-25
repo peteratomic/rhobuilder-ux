@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Public testnet — rhobuilder</title>
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="stylesheet" href="../assets/code.css">
+</head>
+<body data-page="baseline" data-root="../">
+<div class="doc-shell">
+  <header class="topbar">
+    <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">ρ</span>rhobuilder</a>
+    <nav class="topnav">
+      <a class="hide-sm" href="../index.html">Choose your path</a>
+      <a class="hide-sm" href="../docs/index.html">Manual</a>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="sidebar">Contents</button>
+    </nav>
+  </header>
+  <div class="doc-grid">
+    <nav class="sidebar" id="sidebar" aria-label="Manual"><h4>Front</h4><ul><li><a href="index.html">rhobuilder</a></li><li><a href="install.html">Install</a></li><li><a href="start.html">Quickstart</a></li><li><a href="ui.html">Studio tour</a></li><li><a href="concepts.html">Core concepts</a></li><li><a href="glossary.html">Glossary</a></li></ul><h4>Build loop</h4><ul><li><a href="workflow.html">Workflow</a></li><li><a href="design.html">Design and reuse</a></li><li><a href="scaffold.html">Scaffolding and project status</a></li><li><a href="formal.html">Lean and RhoApp</a></li><li><a href="registry.html">Registry and reuse</a></li><li><a href="testing.html">Testing and gates</a></li></ul><h4>Operate</h4><ul><li><a href="dsh.html">DeepSeek Harness</a></li><li><a href="devnet.html">Local devnet</a></li><li><a href="baseline.html" aria-current="page">Public testnet</a></li><li><a href="mcp.html">MCP server</a></li><li><a href="command-reference.html">Command reference</a></li><li><a href="troubleshooting.html">Troubleshooting</a></li><li><a href="faq.html">FAQ</a></li></ul><h4>Understand</h4><ul><li><a href="architecture.html">Architecture</a></li><li><a href="security.html">Security model</a></li><li><a href="gates.html">Canonical gates</a></li><li><a href="evidence.html">Evidence</a></li></ul><h4>Appendix</h4><ul><li><a href="contributing.html">Contributing</a></li><li><a href="review/non-technical-fitness.html">Non-technical fitness review</a></li></ul></nav>
+    <main>
+      <article class="prose">
+<h1 id="public-testnet">Public testnet<a class="headerlink" href="#public-testnet" title="Permanent link">#</a></h1>
+<p>The all-five baseline is code-complete and dry-run green. <strong>No signed public-testnet
+deploy, faucet spend or consolidation has been executed.</strong> Live execution requires a
+separate explicit campaign approval and a funded key.</p>
+<div class="highlight"><pre><span></span><code>make<span class="w"> </span>baseline-preflight
+rhobuilder<span class="w"> </span>--json<span class="w"> </span>baseline<span class="w"> </span>preflight<span class="w"> </span>--network<span class="w"> </span>testnet
+rhobuilder<span class="w"> </span>--json<span class="w"> </span>baseline<span class="w"> </span>plan<span class="w">   </span>--network<span class="w"> </span>testnet
+rhobuilder<span class="w"> </span>--json<span class="w"> </span>baseline<span class="w"> </span>run<span class="w">    </span>--network<span class="w"> </span>testnet<span class="w"> </span>--dry-run
+rhobuilder<span class="w"> </span>--json<span class="w"> </span>baseline<span class="w"> </span>run<span class="w">    </span>--network<span class="w"> </span>testnet<span class="w"> </span>--execute<span class="w"> </span>--keys<span class="w"> </span>&lt;path&gt;<span class="w">   </span><span class="c1"># exit 5 without approval</span>
+rhobuilder<span class="w"> </span>--json<span class="w"> </span>baseline<span class="w"> </span>verify<span class="w"> </span>--network<span class="w"> </span>testnet<span class="w"> </span>--deep<span class="w"> </span>--keys<span class="w"> </span>&lt;path&gt;<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--allow-live<span class="w"> </span>--confirm<span class="w"> </span><span class="s1">'network=testnet,networkId=…,genesis=…'</span>
+</code></pre></div>
+
+<p><code>baseline preflight</code> is a read-only report over the registry files. It lists pins
+(including <code>TBD-review-required</code>), candidate/missing roots, faucet arithmetic, the execution
+gates and every blocker. It reports; it does not resolve anything. <code>--strict</code> exits 1 while
+blockers remain. The campaign evidence template is
+<code>docs/src/evidence/testnet-campaign.template.json</code>; it is not evidence and must not be
+filled until an approved campaign actually runs.</p>
+<h2 id="what-is-implemented">What is implemented<a class="headerlink" href="#what-is-implemented" title="Permanent link">#</a></h2>
+<ul>
+<li>Vendored, pinned terms for r-cash, r-gen, r-share, r-sure and r-print under
+  <code>registry/install/&lt;app&gt;/&lt;commit&gt;/</code>; no sibling repo is edited.</li>
+<li>A shared <code>rcash-sdk</code> executor with a write-ahead op cache, finality wait, root capture and
+  signed Root verification.</li>
+<li><code>baseline keygen|fund|plan|preflight|run|verify</code>; <code>deploy plan|execute</code>; and a local-only
+  <code>chain call</code> for the app suites.</li>
+<li>Adopt-before-deploy: a root is skipped only if every required key resolves at a finalized
+  block. A partial root stops the campaign; the op cache is preserved.</li>
+</ul>
+<h2 id="dry-run-gates">Dry-run gates<a class="headerlink" href="#dry-run-gates" title="Permanent link">#</a></h2>
+<p><code>--execute</code> without <code>--allow-live</code>, a funded key and the identity/plan confirmation token
+exits 5. The token binds <code>network</code>, <code>networkId</code>, <code>genesis</code> and the plan digest. The dry-run
+performs no key load, no signing and no POST. See <a href="security.html">Security model</a>.</p>
+<h2 id="testnet-blocker">Testnet blocker<a class="headerlink" href="#testnet-blocker" title="Permanent link">#</a></h2>
+<p>All five apps require r-cash <code>component:account-factory</code>. The committed testnet manifest
+leaves <code>account_factory_uri</code> null and the candidate roots (<code>rho:id:7srr…</code>, <code>rho:id:dzaz…</code>,
+account factory <code>rho:id:d9qp…</code>) are unverified. The executor must adopt only after a signed
+Root resolve proves every required key. A partial candidate stops the campaign; automated
+partial completion is not implemented, because the root refuses duplicate registrations and
+a wrong skip would deploy a duplicate component. Completing a partial root requires manual
+reconciliation and an explicit operator override. A full r-cash deploy is the fallback when
+no candidate verifies; a second r-cash root is never created.</p>
+<h2 id="pins-and-notes">Pins and notes<a class="headerlink" href="#pins-and-notes" title="Permanent link">#</a></h2>
+<ul>
+<li>r-cash <code>49b441d</code>, r-gen <code>bcc840c</code>, r-sure <code>0da5d04</code>.</li>
+<li>r-share <code>7114acb</code> and r-print <code>a2d91b3</code> are local HEADs recorded as
+  <code>TBD-review-required</code>; live use needs a maintainer pin or explicit approval.</li>
+<li>r-sure’s config names r-gen <code>c0ae67d</code>; the baseline uses <code>bcc840c</code>. Prove the adapter on
+  devnet before a live campaign; never deploy two r-gen roots.</li>
+<li>The faucet is one drip per address (0.3 REV) and rate-limited. <code>baseline fund --plan</code> must
+  show the arithmetic; a 429 is <code>not_run</code>.</li>
+<li>A stored manifest is evidence, not authority. <code>baseline verify --deep</code> re-resolves every
+  root; on testnet it signs Root reads, so it needs <code>--allow-live</code> and the identity
+  confirmation token just like execute. A testnet reset invalidates prior roots.</li>
+</ul>
+<h2 id="why-live-remains-gated">Why live remains gated<a class="headerlink" href="#why-live-remains-gated" title="Permanent link">#</a></h2>
+<p>A live deploy auto-proposes a block on this devnet-mode testnet, spends REV/phlo and writes
+an externally visible manifest. That is irreversible in practice; Rholang has no undo. The
+campaign is a separate approval, not a side effect of <code>make check</code>.</p>
+<h2 id="read-next">Read next<a class="headerlink" href="#read-next" title="Permanent link">#</a></h2>
+<ul>
+<li><a href="security.html">Security model</a> — approval tokens and keys.</li>
+<li><a href="troubleshooting.html">Troubleshooting</a> — blocker and 429 handling.</li>
+<li><a href="evidence.html">Evidence</a> — why the template is not evidence.</li>
+</ul>
+      </article>
+      <nav class="pager" aria-label="Pages"><a class="prev" href="devnet.html"><div class="dir">← Previous</div><div class="t">Local devnet</div></a><a class="next" href="mcp.html"><div class="dir">Next</div><div class="t">MCP server →</div></a></nav>
+      <footer class="footer">Built from rhobuilder <code>3ad31a6</code>.</footer>
+    </main>
+  </div>
+</div>
+<script src="../assets/roles.js"></script>
+<script src="../assets/docs.js"></script>
+</body>
+</html>

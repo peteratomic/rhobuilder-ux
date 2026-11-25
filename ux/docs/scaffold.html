@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scaffolding and project status — rhobuilder</title>
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="stylesheet" href="../assets/code.css">
+</head>
+<body data-page="scaffold" data-root="../">
+<div class="doc-shell">
+  <header class="topbar">
+    <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">ρ</span>rhobuilder</a>
+    <nav class="topnav">
+      <a class="hide-sm" href="../index.html">Choose your path</a>
+      <a class="hide-sm" href="../docs/index.html">Manual</a>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="sidebar">Contents</button>
+    </nav>
+  </header>
+  <div class="doc-grid">
+    <nav class="sidebar" id="sidebar" aria-label="Manual"><h4>Front</h4><ul><li><a href="index.html">rhobuilder</a></li><li><a href="install.html">Install</a></li><li><a href="start.html">Quickstart</a></li><li><a href="ui.html">Studio tour</a></li><li><a href="concepts.html">Core concepts</a></li><li><a href="glossary.html">Glossary</a></li></ul><h4>Build loop</h4><ul><li><a href="workflow.html">Workflow</a></li><li><a href="design.html">Design and reuse</a></li><li><a href="scaffold.html" aria-current="page">Scaffolding and project status</a></li><li><a href="formal.html">Lean and RhoApp</a></li><li><a href="registry.html">Registry and reuse</a></li><li><a href="testing.html">Testing and gates</a></li></ul><h4>Operate</h4><ul><li><a href="dsh.html">DeepSeek Harness</a></li><li><a href="devnet.html">Local devnet</a></li><li><a href="baseline.html">Public testnet</a></li><li><a href="mcp.html">MCP server</a></li><li><a href="command-reference.html">Command reference</a></li><li><a href="troubleshooting.html">Troubleshooting</a></li><li><a href="faq.html">FAQ</a></li></ul><h4>Understand</h4><ul><li><a href="architecture.html">Architecture</a></li><li><a href="security.html">Security model</a></li><li><a href="gates.html">Canonical gates</a></li><li><a href="evidence.html">Evidence</a></li></ul><h4>Appendix</h4><ul><li><a href="contributing.html">Contributing</a></li><li><a href="review/non-technical-fitness.html">Non-technical fitness review</a></li></ul></nav>
+    <main>
+      <article class="prose">
+<h1 id="scaffolding-and-project-status">Scaffolding and project status<a class="headerlink" href="#scaffolding-and-project-status" title="Permanent link">#</a></h1>
+<p><code>rhobuilder new</code> renders the standard skeleton only after the design passes the reuse gate.
+A plan writes nothing; an apply writes once.</p>
+<div class="highlight"><pre><span></span><code>rhobuilder<span class="w"> </span>--json<span class="w"> </span>new<span class="w"> </span>/tmp/app<span class="w"> </span>--design<span class="w"> </span>fixtures/designs/booking.json<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--template<span class="w"> </span>full<span class="w"> </span>--plan
+rhobuilder<span class="w"> </span>--json<span class="w"> </span>new<span class="w"> </span>/tmp/app<span class="w"> </span>--design<span class="w"> </span>fixtures/designs/booking.json<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--template<span class="w"> </span>full<span class="w"> </span>--apply
+</code></pre></div>
+
+<ul>
+<li><code>--template full</code> includes the React/Vite shell; <code>headless</code> omits <code>web/</code>.</li>
+<li><code>--plan</code> is the default. <code>--apply</code> writes.</li>
+<li>A target outside the working directory or a non-empty target needs <code>--force</code>.</li>
+<li>The design gate runs first; a <code>refuse</code> verdict writes nothing.</li>
+<li>Applying is a user decision; the studio shows a read-only plan and the chat requires an
+  explicit confirmation.</li>
+</ul>
+<h2 id="what-is-generated">What is generated<a class="headerlink" href="#what-is-generated" title="Permanent link">#</a></h2>
+<ul>
+<li><code>contracts/src/</code> — for a design with a worked example (<code>bookable-service</code>), the
+  hand-authored contracts; otherwise a generic root, one linear cell per resource, one cell
+  per <code>new</code> component, and a resolver adapter per <code>reuse</code>/<code>extend</code> component.</li>
+<li><code>.rhobuilder-contracts.json</code> — generic designs only: install order, URI captures and
+  required Root keys consumed by <code>deploy plan|execute</code>.</li>
+<li><code>spec/graph/{vertices,edges}.yaml</code> and <code>spec/flows/core.yaml</code> — generated from the design;
+  every arm starts <code>lean_status: owed</code>.</li>
+<li><code>spec/lean/</code> — a self-contained Lean 4.12 stub (<code>lake build</code> passes; only <code>True</code> is
+  proved, so it is a scaffold, not a model of the app).</li>
+<li><code>harness/</code> — standard-library smoke and a <code>not_run</code> behavioural runner.</li>
+<li><code>crates/</code> — Rust core, SDK and CLI stubs; <code>web/</code> in the full template.</li>
+<li><code>docs/</code> — mdBook source; <code>audit/registers/</code> — generated arm and finding registers.</li>
+<li><code>design.json</code>, <code>reuse-report.json</code>, <code>.rhobuilder.json</code>.</li>
+</ul>
+<h2 id="project-status">Project status<a class="headerlink" href="#project-status" title="Permanent link">#</a></h2>
+<div class="highlight"><pre><span></span><code>rhobuilder<span class="w"> </span>--json<span class="w"> </span>project<span class="w"> </span>status<span class="w"> </span>--project<span class="w"> </span>/tmp/app
+</code></pre></div>
+
+<p>The read-only report reads <code>design.json</code>, <code>.rhobuilder.json</code>,
+<code>.rhobuilder-contracts.json</code>, <code>spec/flows</code>, <code>spec/lean</code> and <code>deployments/</code>. It never runs
+<code>make</code>, Docker or the network.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Badge</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Draft</code></td>
+<td>A validated design saved by the composer; no project files implied.</td>
+</tr>
+<tr>
+<td><code>Scaffold</code></td>
+<td>Generated files exist; the unique arms/model are still the author’s work.</td>
+</tr>
+<tr>
+<td><code>Implemented</code></td>
+<td>A verified deployment record or a recorded passing suite supports the claim.</td>
+</tr>
+<tr>
+<td><code>Tested</code></td>
+<td>Recorded suites pass.</td>
+</tr>
+<tr>
+<td><code>Proved model</code></td>
+<td>A shallow Lean theorem; never a Rholang refinement.</td>
+</tr>
+<tr>
+<td><code>Owed</code></td>
+<td>A proof obligation is missing.</td>
+</tr>
+<tr>
+<td><code>Not run</code></td>
+<td>The check did not execute; not a pass.</td>
+</tr>
+<tr>
+<td><code>Refused</code></td>
+<td>The design or reuse gate rejected the project.</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>project status</code> uses recorded evidence, not a fresh gate run. To run the gates, use
+<code>rhobuilder check</code> or <code>make check</code>; see <a href="testing.html">Testing and gates</a>.</p>
+<h2 id="next">Next<a class="headerlink" href="#next" title="Permanent link">#</a></h2>
+<ul>
+<li><a href="testing.html">Testing and gates</a> — static, formal, full and devnet profiles.</li>
+<li><a href="formal.html">Lean and RhoApp</a> — the model obligations.</li>
+<li><a href="command-reference.html">Command reference</a> — <code>new</code>, <code>check</code>, <code>project status</code>.</li>
+</ul>
+      </article>
+      <nav class="pager" aria-label="Pages"><a class="prev" href="design.html"><div class="dir">← Previous</div><div class="t">Design and reuse</div></a><a class="next" href="formal.html"><div class="dir">Next</div><div class="t">Lean and RhoApp →</div></a></nav>
+      <footer class="footer">Built from rhobuilder <code>3ad31a6</code>.</footer>
+    </main>
+  </div>
+</div>
+<script src="../assets/roles.js"></script>
+<script src="../assets/docs.js"></script>
+</body>
+</html>

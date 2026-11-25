@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Studio tour — rhobuilder</title>
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="stylesheet" href="../assets/code.css">
+</head>
+<body data-page="ui" data-root="../">
+<div class="doc-shell">
+  <header class="topbar">
+    <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">ρ</span>rhobuilder</a>
+    <nav class="topnav">
+      <a class="hide-sm" href="../index.html">Choose your path</a>
+      <a class="hide-sm" href="../docs/index.html">Manual</a>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="sidebar">Contents</button>
+    </nav>
+  </header>
+  <div class="doc-grid">
+    <nav class="sidebar" id="sidebar" aria-label="Manual"><h4>Front</h4><ul><li><a href="index.html">rhobuilder</a></li><li><a href="install.html">Install</a></li><li><a href="start.html">Quickstart</a></li><li><a href="ui.html" aria-current="page">Studio tour</a></li><li><a href="concepts.html">Core concepts</a></li><li><a href="glossary.html">Glossary</a></li></ul><h4>Build loop</h4><ul><li><a href="workflow.html">Workflow</a></li><li><a href="design.html">Design and reuse</a></li><li><a href="scaffold.html">Scaffolding and project status</a></li><li><a href="formal.html">Lean and RhoApp</a></li><li><a href="registry.html">Registry and reuse</a></li><li><a href="testing.html">Testing and gates</a></li></ul><h4>Operate</h4><ul><li><a href="dsh.html">DeepSeek Harness</a></li><li><a href="devnet.html">Local devnet</a></li><li><a href="baseline.html">Public testnet</a></li><li><a href="mcp.html">MCP server</a></li><li><a href="command-reference.html">Command reference</a></li><li><a href="troubleshooting.html">Troubleshooting</a></li><li><a href="faq.html">FAQ</a></li></ul><h4>Understand</h4><ul><li><a href="architecture.html">Architecture</a></li><li><a href="security.html">Security model</a></li><li><a href="gates.html">Canonical gates</a></li><li><a href="evidence.html">Evidence</a></li></ul><h4>Appendix</h4><ul><li><a href="contributing.html">Contributing</a></li><li><a href="review/non-technical-fitness.html">Non-technical fitness review</a></li></ul></nav>
+    <main>
+      <article class="prose">
+<h1 id="studio-tour">Studio tour<a class="headerlink" href="#studio-tour" title="Permanent link">#</a></h1>
+<p>The DSH web launch is branded <strong>rhobuilder — rholo dApp studio</strong>. Chat remains the working
+surface; the studio adds identity, onboarding, readiness, status and safe shortcuts.</p>
+<h2 id="launch">Launch<a class="headerlink" href="#launch" title="Permanent link">#</a></h2>
+<div class="highlight"><pre><span></span><code>python3<span class="w"> </span>tools/launch_dsh.py<span class="w"> </span>--with-mcp<span class="w"> </span>--port<span class="w"> </span><span class="m">3081</span><span class="w"> </span>--no-open<span class="w"> </span>web
+</code></pre></div>
+
+<p>Open the printed token URL. <code>--no-ui</code> falls back to the stock shell; <code>--port</code> avoids a
+collision; <code>--no-open</code> is useful on a remote/headless machine. The launcher mounts
+<code>agents/deepseek/ui/</code> by absolute path, disables the shipped brand row and supplies the
+rhobuilder persona by default. See <a href="dsh.html">DeepSeek Harness</a> for the overlay mechanics.</p>
+<h2 id="what-the-user-sees">What the user sees<a class="headerlink" href="#what-the-user-sees" title="Permanent link">#</a></h2>
+<ul>
+<li>Rhobuilder title, favicon, sidebar wordmark and a welcome hero with four starters.</li>
+<li>A <strong>Rhobuilder</strong> dashboard:</li>
+<li><strong>Readiness</strong> — required/setup/warn checks with install hints.</li>
+<li><strong>Networks</strong> — devnet local, testnet gated, mainnet refused.</li>
+<li><strong>Primitive graph</strong> — 16 primitives, 5 cross-app edges and owner counts.</li>
+<li><strong>Design composer</strong> — build a <code>rhobuilder.design/v1</code> draft, validate it in memory, then
+    save it as <code>design.json</code> for continuity. Blank project: <code>designs/&lt;slug&gt;.json</code>; existing
+    project: its root, with overwrite confirmation. This is the only UI write.</li>
+<li><strong>Examples</strong> — bookable-service, payments-ledger, duplicate-escrow. “Plan scaffold
+    (no writes)” returns the file count; applying is a separate, explicitly confirmed chat
+    action.</li>
+<li><strong>Project status</strong> — <code>Scaffold</code>, <code>Implemented</code>, <code>Tested</code>, <code>Proved model</code>, <code>Owed</code>,
+    <code>Not run</code>, <code>Refused</code>, plus <code>Draft</code> for a saved workspace design. These come from project
+    files and recorded evidence, not a fresh <code>make</code>.</li>
+<li><strong>Measured evidence</strong> — P5 records with suite statuses and a raw-JSON disclosure.</li>
+<li><strong>Testnet campaign</strong> — read-only blockers and approval checkpoints; no execute action.</li>
+<li><strong>Truthful status</strong> — P5 measured, P6 gated, generic arms <code>owed</code>.</li>
+<li><strong>CLI handoff</strong> — copyable devnet lifecycle, keygen/fund/install/deploy/baseline
+    commands.</li>
+<li>Plain labels: <code>Ready</code>, <code>Setup required</code>, <code>Not running</code>, <code>Draft</code>, <code>Scaffold</code>, <code>Owed</code>,
+  <code>Not run</code>, <code>Gated</code>, <code>Refused</code>, <code>Not checked</code>.</li>
+</ul>
+<h2 id="save-containment">Save containment<a class="headerlink" href="#save-containment" title="Permanent link">#</a></h2>
+<p>The composer validates through <code>rhobuilder design validate --stdin</code>; a refused draft writes
+nothing. The target is either <code>designs/&lt;slug&gt;.json</code> under the workspace (default installation
+root; override with <code>RHOBUILDER_WORKSPACE</code>) or a relative existing project with a
+<code>.rhobuilder.json</code> marker. Absolute paths, <code>..</code>, symlink escapes and non-project directories
+are refused. Writes are atomic, mode <code>0644</code>, and an existing file needs explicit overwrite
+confirmation. No code, scaffold, key or deploy write exists.</p>
+<h2 id="safety-boundary">Safety boundary<a class="headerlink" href="#safety-boundary" title="Permanent link">#</a></h2>
+<p>The UI never signs, funds or holds keys. Signed operations stay in the terminal with
+explicit gates. Custom routes use DSH’s connection admission fence and return 401 without
+the browser cookie. See <a href="security.html">Security model</a> and
+<a href="architecture.html">Architecture</a>.</p>
+<h2 id="branding">Branding<a class="headerlink" href="#branding" title="Permanent link">#</a></h2>
+<p>The title/favicon/description are applied through the supported <code>webServer.tapIndex</code>
+transform, not by editing DSH’s minified dist. The mark is an original SVG in
+<code>agents/deepseek/ui/assets</code>; the CSS uses <code>--dsw-alias-*</code> tokens with rhobuilder accents.
+Do not fork <code>@deepseek-ai/dsh-web-frontend</code>.</p>
+      </article>
+      <nav class="pager" aria-label="Pages"><a class="prev" href="start.html"><div class="dir">← Previous</div><div class="t">Quickstart</div></a><a class="next" href="concepts.html"><div class="dir">Next</div><div class="t">Core concepts →</div></a></nav>
+      <footer class="footer">Built from rhobuilder <code>3ad31a6</code>.</footer>
+    </main>
+  </div>
+</div>
+<script src="../assets/roles.js"></script>
+<script src="../assets/docs.js"></script>
+</body>
+</html>

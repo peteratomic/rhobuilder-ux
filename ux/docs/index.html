@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>rhobuilder — rhobuilder</title>
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="stylesheet" href="../assets/code.css">
+</head>
+<body data-page="index" data-root="../">
+<div class="doc-shell">
+  <header class="topbar">
+    <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">ρ</span>rhobuilder</a>
+    <nav class="topnav">
+      <a class="hide-sm" href="../index.html">Choose your path</a>
+      <a class="hide-sm" href="../docs/index.html">Manual</a>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="sidebar">Contents</button>
+    </nav>
+  </header>
+  <div class="doc-grid">
+    <nav class="sidebar" id="sidebar" aria-label="Manual"><h4>Front</h4><ul><li><a href="index.html" aria-current="page">rhobuilder</a></li><li><a href="install.html">Install</a></li><li><a href="start.html">Quickstart</a></li><li><a href="ui.html">Studio tour</a></li><li><a href="concepts.html">Core concepts</a></li><li><a href="glossary.html">Glossary</a></li></ul><h4>Build loop</h4><ul><li><a href="workflow.html">Workflow</a></li><li><a href="design.html">Design and reuse</a></li><li><a href="scaffold.html">Scaffolding and project status</a></li><li><a href="formal.html">Lean and RhoApp</a></li><li><a href="registry.html">Registry and reuse</a></li><li><a href="testing.html">Testing and gates</a></li></ul><h4>Operate</h4><ul><li><a href="dsh.html">DeepSeek Harness</a></li><li><a href="devnet.html">Local devnet</a></li><li><a href="baseline.html">Public testnet</a></li><li><a href="mcp.html">MCP server</a></li><li><a href="command-reference.html">Command reference</a></li><li><a href="troubleshooting.html">Troubleshooting</a></li><li><a href="faq.html">FAQ</a></li></ul><h4>Understand</h4><ul><li><a href="architecture.html">Architecture</a></li><li><a href="security.html">Security model</a></li><li><a href="gates.html">Canonical gates</a></li><li><a href="evidence.html">Evidence</a></li></ul><h4>Appendix</h4><ul><li><a href="contributing.html">Contributing</a></li><li><a href="review/non-technical-fitness.html">Non-technical fitness review</a></li></ul></nav>
+    <main>
+      <article class="prose">
+<h1 id="rhobuilder">rhobuilder<a class="headerlink" href="#rhobuilder" title="Permanent link">#</a></h1>
+<p>Design the unique part of a rholo dApp, reuse the rest by <code>rho:id</code>, and deploy only what is
+new. <code>rhobuilder</code> is a DeepSeek Harness (DSH) app builder over the existing rhovision
+primitive graph: r-cash, r-sure, r-gen, r-share, r-print and r-bridge.</p>
+<p>It guides the author through the design and reuse gate, scaffolds the standard skeleton,
+runs static/formal/devnet checks, and produces a deploy plan. Signing stays in the CLI with
+explicit gates.</p>
+<h2 id="status">Status<a class="headerlink" href="#status" title="Permanent link">#</a></h2>
+<p>This is the canonical status table. Other pages summarize and link here.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Repo + DSH plugin/skills/launcher</td>
+<td>implemented; DSH 0.2.2-rc.5 overlays validate; no live model session (<code>DEEPSEEK_API_KEY</code> unset)</td>
+</tr>
+<tr>
+<td>Rhobuilder studio UI</td>
+<td>branded shell; composer with validated <code>design.json</code> save; project status, evidence and testnet preflight; behind the DSH token fence</td>
+</tr>
+<tr>
+<td>Non-technical fitness</td>
+<td>adversarial review committed; composer, devnet lifecycle, prose errors, project status and evidence renderer address the deferred items</td>
+</tr>
+<tr>
+<td>Registry + network identity probe</td>
+<td>implemented; pinned-commit drift clean; devnet roots verified</td>
+</tr>
+<tr>
+<td>Design gate + scaffolder</td>
+<td>design gate and full/headless scaffold implemented; <code>bookable-service</code> is hand-authored; other designs get generic contracts and an install manifest; canonical gates are vendored and hash-checked</td>
+</tr>
+<tr>
+<td>Lean <code>RhoApp</code> + obligations</td>
+<td>shared RhoApp, hash check and per-arm obligation gate implemented; <code>bookable-service</code> has a shallow <code>proved-model</code>; generic scaffolds remain <code>owed</code></td>
+</tr>
+<tr>
+<td>Devnet end-to-end</td>
+<td>P5 measured: r-cash core, r-gen, r-share, r-sure and r-print verified; app root verified; nine suites pass</td>
+</tr>
+<tr>
+<td>Public-testnet baseline</td>
+<td>P6 code-complete: preflight/plan/dry-run/executor/keys/Root verification; live gated and not run; r-cash account-factory is the shared blocker</td>
+</tr>
+<tr>
+<td>MCP server</td>
+<td>read-only/plan server implemented with both protocol lanes</td>
+</tr>
+</tbody>
+</table></div>
+<p>P5 evidence is in <a href="evidence.html">Evidence</a>; the P6 blockers are in
+<a href="baseline.html">Public testnet</a>. Mainnet is refused.</p>
+<h2 id="choose-your-path">Choose your path<a class="headerlink" href="#choose-your-path" title="Permanent link">#</a></h2>
+<ul>
+<li><strong>Non-technical author</strong> — <a href="start.html">Quickstart</a>, then <a href="ui.html">Studio tour</a> and
+  <a href="concepts.html">Core concepts</a>.</li>
+<li><strong>Developer</strong> — <a href="workflow.html">Workflow</a>, <a href="design.html">Design and reuse</a>, then
+  <a href="command-reference.html">Command reference</a>.</li>
+<li><strong>Operator</strong> — <a href="install.html">Install</a>, <a href="devnet.html">Local devnet</a>, then
+  <a href="baseline.html">Public testnet</a>.</li>
+<li><strong>Maintainer</strong> — <a href="architecture.html">Architecture</a>, <a href="security.html">Security model</a>, then
+  <a href="contributing.html">Contributing</a>.</li>
+</ul>
+<h2 id="first-five-minutes">First five minutes<a class="headerlink" href="#first-five-minutes" title="Permanent link">#</a></h2>
+<div class="highlight"><pre><span></span><code>python3<span class="w"> </span>tools/launch_dsh.py<span class="w"> </span>--check<span class="w"> </span>--json
+cargo<span class="w"> </span>build<span class="w"> </span>-p<span class="w"> </span>rhobuilder-cli
+python3<span class="w"> </span>tools/launch_dsh.py<span class="w"> </span>--with-mcp<span class="w"> </span>--port<span class="w"> </span><span class="m">3081</span><span class="w"> </span>web
+</code></pre></div>
+
+<p>Open the printed token URL. The dashboard shows readiness, networks, the primitive graph,
+the design composer, project status, evidence and testnet blockers. Read the setup hints;
+a <code>setup</code> item is not a pass. Continue with <a href="start.html">Quickstart</a>.</p>
+<h2 id="docs-map">Docs map<a class="headerlink" href="#docs-map" title="Permanent link">#</a></h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Start here</th>
+<th>Also</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Front</td>
+<td><a href="install.html">Install</a></td>
+<td><a href="start.html">Quickstart</a>, <a href="ui.html">Studio tour</a>, <a href="concepts.html">Core concepts</a>, <a href="glossary.html">Glossary</a></td>
+</tr>
+<tr>
+<td>Build loop</td>
+<td><a href="workflow.html">Workflow</a></td>
+<td><a href="design.html">Design</a>, <a href="scaffold.html">Scaffold</a>, <a href="formal.html">Formal</a>, <a href="registry.html">Registry</a>, <a href="testing.html">Testing</a></td>
+</tr>
+<tr>
+<td>Operate</td>
+<td><a href="dsh.html">DeepSeek Harness</a></td>
+<td><a href="devnet.html">Devnet</a>, <a href="baseline.html">Testnet</a>, <a href="mcp.html">MCP</a>, <a href="command-reference.html">Command reference</a>, <a href="troubleshooting.html">Troubleshooting</a>, <a href="faq.html">FAQ</a></td>
+</tr>
+<tr>
+<td>Understand</td>
+<td><a href="architecture.html">Architecture</a></td>
+<td><a href="security.html">Security</a>, <a href="gates.html">Gates</a>, <a href="evidence.html">Evidence</a></td>
+</tr>
+<tr>
+<td>Appendix</td>
+<td><a href="contributing.html">Contributing</a></td>
+<td><a href="review/non-technical-fitness.html">Fitness review</a></td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="what-it-targets">What it targets<a class="headerlink" href="#what-it-targets" title="Permanent link">#</a></h2>
+<ul>
+<li><strong>Runtime:</strong> DeepSeek Harness 0.2.x, native plugin, skills and presets.</li>
+<li><strong>Chain:</strong> rholo devnet and <code>https://testnet.rhobot.net</code>; the mainnet profile refuses.</li>
+<li><strong>Primitives:</strong> r-cash, r-sure, r-gen, r-share, r-print, r-bridge and rholo genesis.</li>
+<li><strong>Formal:</strong> Lean 4 shallow models; <code>proved-model</code> is the ceiling, never a refinement.</li>
+</ul>
+<h2 id="licence">Licence<a class="headerlink" href="#licence" title="Permanent link">#</a></h2>
+<p>AGPL-3.0-only. DeepSeek Harness is MIT and is not vendored.</p>
+      </article>
+      <nav class="pager" aria-label="Pages"><a class="next" href="install.html"><div class="dir">Next</div><div class="t">Install →</div></a></nav>
+      <footer class="footer">Built from rhobuilder <code>3ad31a6</code>.</footer>
+    </main>
+  </div>
+</div>
+<script src="../assets/roles.js"></script>
+<script src="../assets/docs.js"></script>
+</body>
+</html>
