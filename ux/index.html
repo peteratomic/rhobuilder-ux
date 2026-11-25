@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>rhobuilder — choose your path</title>
+<style>
+  :root {
+    --bg: #f6f5f1;
+    --surface: #ffffff;
+    --ink: #17171a;
+    --muted: #6b6a66;
+    --line: #e4e2dc;
+    --accent: #2f4bd8;
+    --accent-soft: #eef1fd;
+    --radius: 14px;
+    --serif: "Iowan Old Style", "Charter", "Palatino Linotype", Georgia, serif;
+    --sans: ui-sans-serif, -apple-system, "Segoe UI", Inter, Helvetica, Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #121214;
+      --surface: #1b1b1f;
+      --ink: #ececea;
+      --muted: #9a9994;
+      --line: #2c2c31;
+      --accent: #8fa2ff;
+      --accent-soft: #1f2440;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 var(--sans);
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 40px 24px 96px; }
+
+  header.top {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 72px;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; letter-spacing: -0.01em; }
+  .brand-mark {
+    width: 26px; height: 26px; border-radius: 8px;
+    background: var(--ink); color: var(--bg);
+    display: grid; place-items: center;
+    font-family: var(--serif); font-size: 17px; font-style: italic;
+  }
+  .progress { font-size: 13px; color: var(--muted); letter-spacing: 0.02em; }
+
+  .eyebrow {
+    font-size: 12px; text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--muted); margin: 0 0 14px;
+  }
+  h1 {
+    font-family: var(--serif); font-weight: 400;
+    font-size: clamp(36px, 6vw, 54px); line-height: 1.08; letter-spacing: -0.02em;
+    margin: 0 0 16px;
+  }
+  .lede { color: var(--muted); font-size: 18px; max-width: 34em; margin: 0 0 48px; }
+
+  /* Step 1 — roles */
+  .roles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  @media (max-width: 640px) { .roles { grid-template-columns: 1fr; } }
+  .role {
+    all: unset; cursor: pointer;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 24px 24px 22px;
+    display: flex; flex-direction: column; gap: 8px;
+    transition: border-color .18s, transform .18s, box-shadow .18s;
+  }
+  .role:hover { border-color: var(--ink); transform: translateY(-2px); box-shadow: 0 8px 24px -16px rgba(0,0,0,.35); }
+  .role:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .role-label { font-size: 13px; color: var(--muted); }
+  .role-name { font-family: var(--serif); font-size: 24px; line-height: 1.2; letter-spacing: -0.01em; }
+  .role-desc { color: var(--muted); font-size: 15px; }
+  .role-go {
+    margin-top: 10px; font-size: 14px; font-weight: 500; color: var(--accent);
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .role:hover .role-go .arrow { transform: translateX(3px); }
+  .arrow { transition: transform .18s; display: inline-block; }
+
+  /* Step 2 — path */
+  .back {
+    all: unset; cursor: pointer; font-size: 14px; color: var(--muted);
+    display: inline-flex; gap: 6px; align-items: center; margin-bottom: 36px;
+  }
+  .back:hover { color: var(--ink); }
+  .back:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 4px; }
+
+  .steps { list-style: none; margin: 0; padding: 0; position: relative; }
+  .steps::before {
+    content: ""; position: absolute; left: 17px; top: 36px; bottom: 36px;
+    width: 1px; background: var(--line);
+  }
+  .step { display: grid; grid-template-columns: 36px 1fr; gap: 22px; margin-bottom: 18px; position: relative; }
+  .num {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--bg); border: 1px solid var(--line);
+    display: grid; place-items: center;
+    font-size: 14px; font-weight: 600; color: var(--muted);
+    margin-top: 22px; position: relative; z-index: 1;
+  }
+  .step.first .num { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .card {
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 24px 26px;
+  }
+  .card h2 {
+    font-family: var(--serif); font-weight: 400; font-size: 26px; letter-spacing: -0.01em;
+    margin: 0 0 8px;
+  }
+  .card p { margin: 0 0 14px; color: var(--muted); }
+  .points { margin: 0 0 20px; padding: 0; list-style: none; display: grid; gap: 6px; }
+  .points li { font-size: 14.5px; padding-left: 18px; position: relative; }
+  .points li::before {
+    content: ""; position: absolute; left: 2px; top: .62em;
+    width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+  }
+  .note {
+    font-size: 13.5px; background: var(--accent-soft); color: var(--ink);
+    border-radius: 8px; padding: 10px 12px; margin: -4px 0 20px;
+  }
+  .cta {
+    display: inline-flex; align-items: center; gap: 8px;
+    text-decoration: none; font-size: 15px; font-weight: 500;
+    padding: 11px 18px; border-radius: 999px;
+    border: 1px solid var(--ink); color: var(--ink);
+    transition: background .18s, color .18s;
+  }
+  .cta:hover { background: var(--ink); color: var(--bg); }
+  .cta:hover .arrow { transform: translateX(3px); }
+  .cta:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .step.first .cta { background: var(--ink); color: var(--bg); }
+  .step.first .cta:hover { background: var(--accent); border-color: var(--accent); }
+
+  .switch { margin-top: 48px; font-size: 14px; color: var(--muted); }
+  .switch button {
+    all: unset; cursor: pointer; color: var(--ink);
+    border-bottom: 1px solid var(--line); margin-left: 4px;
+  }
+  .switch button:hover { border-color: var(--ink); }
+  .switch button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  footer { margin-top: 96px; font-size: 13px; color: var(--muted); }
+  footer a { color: inherit; }
+
+  .view { animation: in .35s ease both; }
+  @keyframes in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) {
+    .view, .role, .arrow, .cta { animation: none; transition: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">ρ</span>rhobuilder</div>
+    <div class="progress" id="progress" aria-live="polite"></div>
+  </header>
+  <main id="app"></main>
+  <footer>
+    Guides link to the <a href="https://github.com/rhovision-org/rhobuilder/tree/main/docs/src" target="_blank" rel="noopener">rhobuilder manual</a> on GitHub.
+  </footer>
+</div>
+
+<script>
+const DOCS = "https://github.com/rhovision-org/rhobuilder/blob/main/docs/src/";
+
+const ROLES = [
+  {
+    id: "author",
+    name: "A non-technical author",
+    desc: "You have an idea for a dApp and want to shape it, without writing contract code.",
+    intro: "Go from idea to a validated design. You won't need to write Rholang or learn the registry schema.",
+    steps: [
+      {
+        title: "Quickstart",
+        file: "start.md",
+        summary: "The shortest route from a fresh checkout to a validated design and a scaffold plan.",
+        points: [
+          "Run a read-only check that shows what your machine is missing",
+          "Launch the studio in your browser",
+          "Start a design with the composer, or let the assistant interview you"
+        ]
+      },
+      {
+        title: "Studio tour",
+        file: "ui.md",
+        summary: "A walk through the rhobuilder studio and what each part of the dashboard shows.",
+        points: [
+          "Readiness, networks and the primitive graph",
+          "The design composer and ready-made examples",
+          "Project status in plain labels: Draft, Scaffold, Tested, Owed and more"
+        ],
+        note: "The studio never signs, funds or holds keys. Those steps stay in the terminal."
+      },
+      {
+        title: "Core concepts",
+        file: "concepts.md",
+        summary: "The idea behind rhobuilder: write only the part that's genuinely new, and reuse what's already on-chain.",
+        points: [
+          "Commodity vs unique: payments, escrow and booking already exist",
+          "Reuse, extend or new, and why duplicates are refused",
+          "What each status really means, and which networks allow what"
+        ]
+      }
+    ]
+  },
+  {
+    id: "developer",
+    name: "A developer",
+    desc: "You'll design, implement and test the contracts and adapters.",
+    intro: "Learn the build loop, the design document and the CLI that every front end calls.",
+    steps: [
+      {
+        title: "Workflow",
+        file: "workflow.md",
+        summary: "The end-to-end loop, from probing the network to closing out a release.",
+        points: [
+          "Probe, design, reuse, scaffold",
+          "Implement, prove, test",
+          "Plan the deploy, execute from the CLI, close"
+        ]
+      },
+      {
+        title: "Design and reuse",
+        file: "design.md",
+        summary: "The design.json document, and the gate that refuses duplicate primitives before any code is written.",
+        points: [
+          "The rhobuilder.design/v1 schema, field by field",
+          "Tagging components reuse, extend or new",
+          "Running the gate, with passing and refused examples"
+        ]
+      },
+      {
+        title: "Command reference",
+        file: "command-reference.md",
+        summary: "Every rhobuilder command, flag and exit code, with structured JSON output.",
+        points: [
+          "Global flags and the JSON envelope",
+          "chain, registry, design, baseline, deploy and more",
+          "Which commands are read-only and which are gated"
+        ]
+      }
+    ]
+  },
+  {
+    id: "operator",
+    name: "An operator",
+    desc: "You install and run rhobuilder, and manage deploys to devnet and testnet.",
+    intro: "Get rhobuilder installed, run a local chain safely, then prepare for the public testnet.",
+    steps: [
+      {
+        title: "Install",
+        file: "install.md",
+        summary: "Prerequisites, the readiness check, and installing from source or from a release package.",
+        points: [
+          "What you need: Node, Rust, Python, plus optional Docker and Lean",
+          "Source build or a checksummed release tarball",
+          "Environment variables, upgrades and uninstalling"
+        ]
+      },
+      {
+        title: "Local devnet",
+        file: "devnet.md",
+        summary: "Running and onboarding a local, disposable chain, and the results measured on it.",
+        points: [
+          "The safe lifecycle: status, start, wait, onboard",
+          "Dry run first; --execute only on devnet",
+          "Why a not-run suite is never counted as a pass"
+        ]
+      },
+      {
+        title: "Public testnet",
+        file: "baseline.md",
+        summary: "The gated testnet campaign: preflight, plan, dry run and verification.",
+        points: [
+          "Read-only preflight that lists every blocker",
+          "The gates live execution must clear",
+          "Pins and the current account-factory blocker"
+        ],
+        note: "No live testnet deploy has been run yet. It needs separate approval and a funded key."
+      }
+    ]
+  },
+  {
+    id: "evaluator",
+    name: "An evaluator or maintainer",
+    desc: "You need to understand how rhobuilder works, and whether to trust it.",
+    intro: "See how it's put together, where the safety boundaries are, and how every claim is tested.",
+    steps: [
+      {
+        title: "Architecture",
+        file: "architecture.md",
+        summary: "A Rust decision core with thin front ends: the studio, the plugin and the MCP server.",
+        points: [
+          "What each crate and folder is responsible for",
+          "The data flow from idea to deploy evidence",
+          "Trust boundaries: only the CLI decides and signs"
+        ]
+      },
+      {
+        title: "Security model",
+        file: "security.md",
+        summary: "How keys, funding and live deploys are protected, and what each surface may and may not do.",
+        points: [
+          "The threat model and its main risks",
+          "How keys are handled, and the network gates",
+          "Integrity of pinned, vendored terms"
+        ]
+      },
+      {
+        title: "Testing and gates",
+        file: "testing.md",
+        summary: "The test layers, the project check profiles, and how status claims are earned.",
+        points: [
+          "From Rust unit tests to package self-tests",
+          "Static, formal and full project profiles",
+          "CI, and why evidence isn't authority"
+        ]
+      }
+    ]
+  }
+];
+
+const app = document.getElementById("app");
+const progress = document.getElementById("progress");
+const esc = s => s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+function renderChooser() {
+  progress.textContent = "Step 1 of 2";
+  document.title = "rhobuilder — choose your path";
+  app.innerHTML = `
+    <section class="view">
+      <p class="eyebrow">Choose your path</p>
+      <h1>You are…</h1>
+      <p class="lede">Pick the role that fits you best, and we'll show you where to start.</p>
+      <div class="roles">
+        ${ROLES.map(r => `
+          <button class="role" data-role="${r.id}">
+            <span class="role-label">I'm</span>
+            <span class="role-name">${esc(r.name)}</span>
+            <span class="role-desc">${esc(r.desc)}</span>
+            <span class="role-go">See my path <span class="arrow">→</span></span>
+          </button>`).join("")}
+      </div>
+    </section>`;
+  app.querySelectorAll(".role").forEach(b =>
+    b.addEventListener("click", () => { location.hash = b.dataset.role; }));
+}
+
+function renderPath(role) {
+  progress.textContent = "Step 2 of 2";
+  document.title = `rhobuilder — ${role.name.replace(/^An? /, "")}`;
+  const others = ROLES.filter(r => r.id !== role.id);
+  app.innerHTML = `
+    <section class="view">
+      <button class="back" id="back"><span aria-hidden="true">←</span> All roles</button>
+      <p class="eyebrow">Your path · ${esc(role.name.replace(/^An? /, ""))}</p>
+      <h1>Start here.</h1>
+      <p class="lede">${esc(role.intro)}</p>
+      <ol class="steps">
+        ${role.steps.map((s, i) => `
+          <li class="step${i === 0 ? " first" : ""}">
+            <span class="num" aria-hidden="true">${i + 1}</span>
+            <article class="card">
+              <h2>${esc(s.title)}</h2>
+              <p>${esc(s.summary)}</p>
+              <ul class="points">${s.points.map(p => `<li>${esc(p)}</li>`).join("")}</ul>
+              ${s.note ? `<div class="note">${esc(s.note)}</div>` : ""}
+              <a class="cta" href="${DOCS + s.file}" target="_blank" rel="noopener">
+                ${i === 0 ? "Start with" : "Open"} ${esc(s.title)} <span class="arrow">→</span>
+              </a>
+            </article>
+          </li>`).join("")}
+      </ol>
+      <p class="switch">Not you? Switch to
+        ${others.map((r, i) => `<button data-role="${r.id}">${esc(r.name.replace(/^An? /, ""))}</button>${i < others.length - 1 ? "," : ""}`).join(" ")}
+      </p>
+    </section>`;
+  document.getElementById("back").addEventListener("click", () => { location.hash = ""; });
+  app.querySelectorAll(".switch button").forEach(b =>
+    b.addEventListener("click", () => { location.hash = b.dataset.role; }));
+}
+
+function route() {
+  const role = ROLES.find(r => r.id === location.hash.slice(1));
+  role ? renderPath(role) : renderChooser();
+  window.scrollTo(0, 0);
+}
+
+window.addEventListener("hashchange", route);
+route();
+</script>
+</body>
+</html>
