@@ -1,0 +1,3 @@
+[submodule "vendor/rhobuilder"]
+	path = vendor/rhobuilder
+	url = https://github.com/rhovision-org/rhobuilder
